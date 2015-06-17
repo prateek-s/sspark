@@ -500,6 +500,7 @@ class DAGScheduler(
     waiter
   }
 
+  //RunJob is the external entry point.
   def runJob[T, U: ClassTag](
       rdd: RDD[T],
       func: (TaskContext, Iterator[T]) => U,
@@ -743,6 +744,7 @@ class DAGScheduler(
       logInfo("Final stage: " + finalStage + "(" + finalStage.name + ")")
       logInfo("Parents of final stage: " + finalStage.parents)
       logInfo("Missing parents: " + getMissingParentStages(finalStage))
+      //XXX: Where is TaskContext? Add RDD to that
       val shouldRunLocally =
         localExecutionEnabled && allowLocal && finalStage.parents.isEmpty && partitions.length == 1
       val jobSubmissionTime = clock.getTimeMillis()
@@ -788,6 +790,7 @@ class DAGScheduler(
     }
   }
 
+  //XXX: Tasks are spawned here
   /** Called when stage's parents are available and we can now do its task. */
   private def submitMissingTasks(stage: Stage, jobId: Int) {
     logDebug("submitMissingTasks(" + stage + ")")

@@ -625,6 +625,9 @@ private[spark] class TaskSetManager(
         info.id, taskSet.id, info.taskId, info.duration, info.host, tasksSuccessful, numTasks))
       // Mark successful and stop if all the tasks have succeeded.
       successful(index) = true
+
+      //XXX:Checkpoint HERE. Update various other RDD info
+
       if (tasksSuccessful == numTasks) {
         isZombie = true
       }
