@@ -136,6 +136,9 @@ private[spark] class TaskSetManager(
   // Task index, start and finish time for each task attempt (indexed by task ID)
   val taskInfos = new HashMap[Long, TaskInfo]
 
+  //Tasks that have been checkpointed already
+  val checkpointedTasks = new ArrayBuffer[Int]
+
   // How frequently to reprint duplicate exceptions in full, in milliseconds
   val EXCEPTION_PRINT_INTERVAL =
     conf.getLong("spark.logging.exceptionPrintInterval", 10000)
@@ -486,7 +489,7 @@ private[spark] class TaskSetManager(
           val taskName = s"task ${info.id} in stage ${taskSet.id}"
           logInfo("Starting %s (TID %d, %s, %s, %d bytes)".format(
               taskName, taskId, host, taskLocality, serializedTask.limit))
-
+          //Task serialized. When is the actual code run?? 
           sched.dagScheduler.taskStarted(task, info)
           return Some(new TaskDescription(taskId = taskId, attemptNumber = attemptNum, execId,
             taskName, index, serializedTask))
@@ -609,6 +612,23 @@ private[spark] class TaskSetManager(
     }
   }
 
+  def pCheckpoint(tid: Long) = {
+    //Check if already checkpointed.
+    //Checkpoint
+    val info = taskInfos(tid)
+    val index = info.index
+    //checkpointedTasks.append(index)
+
+    //val task = tasks.tid
+    //val stage = stageIdToStage.get(task.stageId)
+    //val rdd = stage.rdd
+    //val partition = id 
+
+    //do actual checkpointing here?
+
+  }
+
+
   /**
    * Marks the task as successful and notifies the DAGScheduler that a task has ended.
    */
@@ -626,7 +646,7 @@ private[spark] class TaskSetManager(
       // Mark successful and stop if all the tasks have succeeded.
       successful(index) = true
 
-      //XXX:Checkpoint HERE. Update various other RDD info
+      pCheckpoint(tid) 
 
       if (tasksSuccessful == numTasks) {
         isZombie = true

@@ -467,6 +467,12 @@ class DAGScheduler(
     job.finalStage.resultOfJob = None
   }
 
+/* Type parametrization? 
+ func: function of two arguments. Iterator??
+asInstanceOf = [] syntax
+Number of partitions already decided?
+ */
+
   /**
    * Submit a job to the job scheduler and get a JobWaiter object back. The JobWaiter object
    * can be used to block until the the job finishes executing or can be used to cancel the job.
@@ -687,6 +693,7 @@ class DAGScheduler(
     // In that case, we wouldn't have the stage anymore in stageIdToStage.
     val stageAttemptId = stageIdToStage.get(task.stageId).map(_.latestInfo.attemptId).getOrElse(-1)
     listenerBus.post(SparkListenerTaskStart(task.stageId, stageAttemptId, taskInfo))
+    //ExecutorAllocationManager acts
     submitWaitingStages()
   }
 
@@ -867,6 +874,7 @@ class DAGScheduler(
         new ResultTask(stage.id, taskBinary, part, locs, id)
       }
     }
+    //tasks is of type List[partition-num, part, locs, ResultTask(id,binary,part,local,id)]
 
     if (tasks.size > 0) {
       logInfo("Submitting " + tasks.size + " missing tasks from " + stage + " (" + stage.rdd + ")")

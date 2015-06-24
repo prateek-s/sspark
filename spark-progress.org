@@ -1,3 +1,14 @@
+* 0 Scala
+** Case classes Chapter 15
+   DEADLINE: <2015-06-24 Wed>
+case. Syntactic boilerplate added.
+val func2 = func.asInstanceOf[(TaskContext, Iterator[_]) => _]
+func.asInstanceOf[Type] casts func to Type
+
+Partial functions, pattern matching. 15.7
+
+
+
 * 1 Build 
 Download 1.3.1
 
@@ -13,6 +24,11 @@ sbt/sbt clean assembly
 
 Could not build the examples again after modification.
 SBT downloads everything from the internet all over again, starting from scala.jar
+
+** Ctags
+ctags -e -R . 
+-e option generates for emacs
+s-. defined as find-tag-other-window, M-* too cumbersome. M-,
 
 
 * 2 Run Tests. Modify few sample programs
@@ -32,46 +48,67 @@ The checkpointing is periodic. Not every minute, but every n-th time step (as us
 time-step ~= batch interval
 
 
-* 4 Logging and Debugging. 5 benchmarks
-
-
-* 5 DAG Scheduler study. 5 benchmarks
-
-TaskSetManager:handleSuccessfulTask
--> handleTaskCompletion
-
-From within a task, get the partition number (easy), and the RDD. 
-Task->partition
-? Job->RDD 
-? Task->Job
-
-add RDD field to TaskContext  in submitJob
-
-SubmitMissingTasks is where the actual tasks are spawned from. Not a very appropriate method name. Calls taskscheduler.submittasks
-
-handleJobSubmitted -> submitStage -> submitMissingTasks -> ... 
-
-cacheLocs array has partition location information. use this?
-
-
-* 6 Instrument Task-End
-
-* 7 Checkpoint RDD glue
-
+* 4 Jobs
  FutureAction.scala
  sc.runJob(rdd, CheckpointRDD.writeToFile[Int](path.toString, broadcastedConf, 1024) _)
 
 runjob takes rdd, action, and list of partitions.
 
-scala method syntax writetofile. def M[]()(){}. Second pair of parenthesis has ctx.Function Output?
+scala method syntax writetofile. def M[]()(){}. Second pair of parenthesis has ctx. 
 
 SparkContext.scala:submitJob , 1469 doCheckpoint after every job!!!! WHY?
 
-clean(function).
 
-=> syntax
+* 5 Tasks
+** TaskSet
+private[spark] class TaskSet(
+    val tasks: Array[Task[_]],
+    val stageId: Int,
+    val attempt: Int,
+    val priority: Int,
+    val properties: Properties) {
+    val id: String = stageId + "." + attempt
 
-RDDCheckpointData.scala:doCheckpoint
+** Task Submission
+Flow:: handleJobSubmitted -> submitStage -> submitMissingTasks -> ... 
+
+SubmitMissingTasks:: is where the actual tasks are spawned from. Not a very appropriate method name.
+submitTasks(new TaskSet(tasks.toArray))
+
+TaskSet:: Just a type
+
+submitTasks:: createTaskSetManager ; activeTaskSets ; addTaskSetManager
+
+Flow:: TaskSetManager:resourceOffer->DAGScheduler:handleBeginEvent -> ExecutorAllocationManager:onTaskStart
+
+** Task End
+
+TaskSetManager:handleSuccessfulTask [calls dopCheckpoint] -> handleTaskCompletion
+
+*** Required Checkpointing Information
+Already:: already checkpointed or not
+job:: obv
+stage:: = stageIdToStage.get(task.stageId)
+RDD:: = from stage.rdd
+Partition:: partition id
+location:: Map of partition->location. cacheLocs array has partition location information. use this?
+
+
+add RDD field to TaskContext  in submitJob
+
+
+
+* 6 Instrument Task-End
+
+* 7 Checkpointing
+
+** Flow
+
+iterator:: getOrCompute | computeOrReadCheckpoint -> parent.iterator
+cacheManager.getOrCompute:: gets/computes *partition*. Reads data located by blockManager.get(rdd,partition)
+computeOrReadCheckpoint(split, context):: if(isCheckpointed) parent.iterator else compute
+
+RDDCheckpointData.scala:doCheckpoint:: Lazily marks for checkpointing?
   
 Every runJob calls RDD checkpointing at the end. In RDDCheckpointData, if an RDD is not marked for checkpointing, it simply returns. Every checkpoint operation is recursive and goes up through the RDD dependency chain. 
 
