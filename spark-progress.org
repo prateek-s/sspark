@@ -1,5 +1,13 @@
 * 0 Scala
 ** Case classes Chapter 15
+   DEADLINE: <2015-06-24 Wed>
+case. Syntactic boilerplate added.
+val func2 = func.asInstanceOf[(TaskContext, Iterator[_]) => _]
+func.asInstanceOf[Type] casts func to Type
+
+Partial functions, pattern matching. 15.7
+
+
 
 * 1 Build 
 Download 1.3.1
@@ -43,19 +51,24 @@ time-step ~= batch interval
 * 4 Logging and Debugging. 5 benchmarks
 
 
-* 5 DAG Scheduler study. 5 benchmarks
+* 5 DAG Scheduler study
 
 TaskSetManager:handleSuccessfulTask [calls dopCheckpoint]
 -> handleTaskCompletion
 
 From within a task, get the partition number (easy), and the RDD. 
-Task->partition
-? Job->RDD 
-? Task->Job
+stage.rdd
+job.partitions
 
 add RDD field to TaskContext  in submitJob
 
-SubmitMissingTasks is where the actual tasks are spawned from. Not a very appropriate method name. Calls taskscheduler.submittasks
+SubmitMissingTasks:: is where the actual tasks are spawned from. Not a very appropriate method name.
+submitTasks(new TaskSet(tasks.toArray))
+
+TaskSet::Just a type
+
+submitTasks::
+
 
 handleJobSubmitted -> submitStage -> submitMissingTasks -> ... 
 

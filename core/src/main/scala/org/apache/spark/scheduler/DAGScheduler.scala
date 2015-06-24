@@ -873,7 +873,7 @@ Number of partitions already decided?
         new ResultTask(stage.id, taskBinary, part, locs, id)
       }
     }
-
+    //tasks is of type List[partition-num, part, locs, ResultTask(id,binary,part,local,id)]
     if (tasks.size > 0) {
       logInfo("Submitting " + tasks.size + " missing tasks from " + stage + " (" + stage.rdd + ")")
       stage.pendingTasks ++= tasks
