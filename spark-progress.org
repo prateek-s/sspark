@@ -105,10 +105,18 @@ add RDD field to TaskContext  in submitJob
 ** Flow
 
 iterator:: getOrCompute | computeOrReadCheckpoint -> parent.iterator
+
+
 cacheManager.getOrCompute:: gets/computes *partition*. Reads data located by blockManager.get(rdd,partition)
 computeOrReadCheckpoint(split, context):: if(isCheckpointed) parent.iterator else compute
 
-RDDCheckpointData.scala:doCheckpoint:: Lazily marks for checkpointing?
+
+** Actual Checkpointing
+
+RDDCheckpointData:doCheckpoint:: Actually writes to file
+
+
+
   
 Every runJob calls RDD checkpointing at the end. In RDDCheckpointData, if an RDD is not marked for checkpointing, it simply returns. Every checkpoint operation is recursive and goes up through the RDD dependency chain. 
 
@@ -132,3 +140,10 @@ CacheManager.scala:getOrCompute
 
 rdd.scala:markCheckpointed . When checkpointed, an RDDs dependencies and *partitions* are cleared. The new parent is the checkpointed RDD file.
 
+* TODO
+- checkpointing partitions
+- recursive checkpointing
+- recovery
+- array of checkpointed partitions
+- cache/block manager
+- 

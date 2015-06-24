@@ -70,7 +70,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     RDDCheckpointData.synchronized { cpFile }
   }
 
-  def doFineGrainedCheckpoint() {
+  def CheckpointPartitionActual (/* Partition ID, atleast? */) {
     //Write the partition here. Partition ID is a Task parameter.
   }
 

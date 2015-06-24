@@ -1420,11 +1420,18 @@ abstract class RDD[T: ClassTag](
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
       if (checkpointData.isDefined) {
+        //actual checkpointing
         checkpointData.get.doCheckpoint()
       } else {
         dependencies.foreach(_.rdd.doCheckpoint())
       }
     }
+  }
+
+  def doCheckpointPartition(/* Partition ID*/) {
+    //Check Bitmap. If falls within checkpointed region, exit.
+    //checkpointData.get.CheckpointPartitionActual(id)
+    //dependencies?? 
   }
 
   /**
@@ -1435,6 +1442,13 @@ abstract class RDD[T: ClassTag](
     clearDependencies()
     partitions_ = null
     deps = null    // Forget the constructor argument for dependencies too
+  }
+
+  /**
+    * Some partitions are checkpointed. Increments something everytime?
+    */
+  def markPartialCheckpointed() {
+
   }
 
   /**
