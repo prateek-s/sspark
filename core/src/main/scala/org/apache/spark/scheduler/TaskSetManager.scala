@@ -625,8 +625,19 @@ private[spark] class TaskSetManager(
         info.id, taskSet.id, info.taskId, info.duration, info.host, tasksSuccessful, numTasks))
       // Mark successful and stop if all the tasks have succeeded.
       successful(index) = true
-
+      
       //XXX:Checkpoint HERE. Update various other RDD info
+      //Need: RDD information, taskInfos, task number, actual partition.
+      if(info.pCheckpointed()) {
+        logInfo("Task already checkpointed : %d").format(tid) 
+      }
+
+      val ckptresult = dopCheckpoint(tid, info)
+      if (ckptresult == true) {
+        logInfo("Partiton Checkpoint Success")
+      } else {
+        logInfo("FAILED Partition Checkpoint. REASON:") 
+      }
 
       if (tasksSuccessful == numTasks) {
         isZombie = true

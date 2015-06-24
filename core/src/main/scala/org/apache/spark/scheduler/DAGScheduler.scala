@@ -467,6 +467,12 @@ class DAGScheduler(
     job.finalStage.resultOfJob = None
   }
 
+/* Type parametrization? 
+ func: function of two arguments. Iterator??
+asInstanceOf = [] syntax
+Number of partitions already decided?
+ */
+
   /**
    * Submit a job to the job scheduler and get a JobWaiter object back. The JobWaiter object
    * can be used to block until the the job finishes executing or can be used to cancel the job.

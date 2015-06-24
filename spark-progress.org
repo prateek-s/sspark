@@ -1,3 +1,6 @@
+* 0 Scala
+** Case classes Chapter 15
+
 * 1 Build 
 Download 1.3.1
 
@@ -13,6 +16,11 @@ sbt/sbt clean assembly
 
 Could not build the examples again after modification.
 SBT downloads everything from the internet all over again, starting from scala.jar
+
+** Ctags
+ctags -e -R . 
+-e option generates for emacs
+s-. defined as find-tag-other-window, M-* too cumbersome. M-,
 
 
 * 2 Run Tests. Modify few sample programs
@@ -37,7 +45,7 @@ time-step ~= batch interval
 
 * 5 DAG Scheduler study. 5 benchmarks
 
-TaskSetManager:handleSuccessfulTask
+TaskSetManager:handleSuccessfulTask [calls dopCheckpoint]
 -> handleTaskCompletion
 
 From within a task, get the partition number (easy), and the RDD. 
