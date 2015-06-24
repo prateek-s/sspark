@@ -136,7 +136,7 @@ private[spark] class TaskSetManager(
   // Task index, start and finish time for each task attempt (indexed by task ID)
   val taskInfos = new HashMap[Long, TaskInfo]
 
-  //Which tasks have been checkpointed
+  //Tasks that have been checkpointed already
   val checkpointedTasks = new ArrayBuffer[Int]
 
   // How frequently to reprint duplicate exceptions in full, in milliseconds
@@ -612,7 +612,21 @@ private[spark] class TaskSetManager(
     }
   }
 
-  def pCheckpoint(tid: Long, info, index) = {}
+  def pCheckpoint(tid: Long, info, index) = {
+    //Check if already checkpointed.
+    //Checkpoint
+    val info = taskInfos(tid)
+    val index = info.index
+    //checkpointedTasks.append(index)
+
+    //val task = tasks.tid
+    //val stage = stageIdToStage.get(task.stageId)
+    //val rdd = stage.rdd
+    //val partition = id 
+
+    //do actual checkpointing here?
+
+  }
 
 
   /**
@@ -631,19 +645,8 @@ private[spark] class TaskSetManager(
         info.id, taskSet.id, info.taskId, info.duration, info.host, tasksSuccessful, numTasks))
       // Mark successful and stop if all the tasks have succeeded.
       successful(index) = true
-      
-      //XXX:Checkpoint HERE. Update various other RDD info
-      //Need: RDD information, taskInfos, task number, actual partition.
-      // if(info.pCheckpointed()) {
-      //   logInfo("Task already checkpointed : %d").format(tid) 
-      // }
 
-      // val ckptresult = pCheckpoint(tid, info)
-      // if (ckptresult == true) {
-      //   logInfo("Partiton Checkpoint Success")
-      // } else {
-      //   logInfo("FAILED Partition Checkpoint. REASON:") 
-      // }
+      pCheckpoint(tid) 
 
       if (tasksSuccessful == numTasks) {
         isZombie = true
