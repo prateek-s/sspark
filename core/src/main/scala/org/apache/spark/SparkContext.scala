@@ -1573,7 +1573,7 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
     val callSite = getCallSite
     val waiter = dagScheduler.submitJob(
       rdd,
-      (context: TaskContext, iter: Iterator[T]) => cleanF(iter),
+      (context: TaskContext, iter: Iterator[T])s => cleanF(iter),
       partitions,
       callSite,
       allowLocal = false,

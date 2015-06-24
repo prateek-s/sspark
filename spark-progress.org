@@ -63,7 +63,7 @@ cacheLocs array has partition location information. use this?
 
 runjob takes rdd, action, and list of partitions.
 
-scala method syntax writetofile. def M[]()(){}. Second pair of parenthesis has ctx. 
+scala method syntax writetofile. def M[]()(){}. Second pair of parenthesis has ctx.Function Output?
 
 SparkContext.scala:submitJob , 1469 doCheckpoint after every job!!!! WHY?
 

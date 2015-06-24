@@ -32,6 +32,8 @@ private[spark] class TaskContextImpl(
   extends TaskContext
   with Logging {
 
+  //needs RDD info!
+
   // For backwards-compatibility; this method is now deprecated as of 1.3.0.
   override def attemptId(): Long = taskAttemptId
 
