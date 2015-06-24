@@ -238,6 +238,7 @@ abstract class RDD[T: ClassTag](
    * subclasses of RDD.
    */
   final def iterator(split: Partition, context: TaskContext): Iterator[T] = {
+    //storage level none => no disk, no memory
     if (storageLevel != StorageLevel.NONE) {
       SparkEnv.get.cacheManager.getOrCompute(this, split, context, storageLevel)
     } else {
@@ -1350,6 +1351,12 @@ abstract class RDD[T: ClassTag](
    * Return whether this RDD has been checkpointed or not
    */
   def isCheckpointed: Boolean = checkpointData.exists(_.isCheckpointed)
+
+  //PartitionCheckpointBitmap required
+  //val partCheckpointBitmap
+
+  //def isPartCheckpointed(split):Boolean = 
+ 
 
   /**
    * Gets the name of the file to which this RDD was checkpointed
