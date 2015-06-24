@@ -612,7 +612,7 @@ private[spark] class TaskSetManager(
     }
   }
 
-  def pCheckpoint(tid: Long, info, index) = {
+  def pCheckpoint(tid: Long) = {
     //Check if already checkpointed.
     //Checkpoint
     val info = taskInfos(tid)

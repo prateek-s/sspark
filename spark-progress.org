@@ -48,10 +48,18 @@ The checkpointing is periodic. Not every minute, but every n-th time step (as us
 time-step ~= batch interval
 
 
-* 4 Logging and Debugging. 5 benchmarks
+* 4 Jobs
+ FutureAction.scala
+ sc.runJob(rdd, CheckpointRDD.writeToFile[Int](path.toString, broadcastedConf, 1024) _)
+
+runjob takes rdd, action, and list of partitions.
+
+scala method syntax writetofile. def M[]()(){}. Second pair of parenthesis has ctx. 
+
+SparkContext.scala:submitJob , 1469 doCheckpoint after every job!!!! WHY?
 
 
-* 5 DAG Scheduler
+* 5 Tasks
 ** TaskSet
 private[spark] class TaskSet(
     val tasks: Array[Task[_]],
@@ -90,20 +98,9 @@ add RDD field to TaskContext  in submitJob
 
 * 6 Instrument Task-End
 
-* 7 Checkpoint RDD glue
+* 7 Checkpointing
 
- FutureAction.scala
- sc.runJob(rdd, CheckpointRDD.writeToFile[Int](path.toString, broadcastedConf, 1024) _)
 
-runjob takes rdd, action, and list of partitions.
-
-scala method syntax writetofile. def M[]()(){}. Second pair of parenthesis has ctx. 
-
-SparkContext.scala:submitJob , 1469 doCheckpoint after every job!!!! WHY?
-
-clean(function).
-
-=> syntax
 
 RDDCheckpointData.scala:doCheckpoint
   
