@@ -72,13 +72,15 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
 
   def CheckpointPartitionActual (/* Partition ID, atleast? */) {
     //Write the partition here. Partition ID is a Task parameter.
+
+    
   }
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.
   def doCheckpoint() {
     // If it is marked for checkpointing AND checkpointing is not already in progress,
     // then set it to be in progress, else return
-    //doCheckpoint is called on *every* rdd, so check if it is marked for checkpointing
+    // doCheckpoint is called on *every* rdd, so check if it is marked for checkpointing
     RDDCheckpointData.synchronized {
       if (cpState == MarkedForCheckpoint) {
         cpState = CheckpointingInProgress
