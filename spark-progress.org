@@ -51,28 +51,41 @@ time-step ~= batch interval
 * 4 Logging and Debugging. 5 benchmarks
 
 
-* 5 DAG Scheduler study
+* 5 DAG Scheduler
+** TaskSet
+private[spark] class TaskSet(
+    val tasks: Array[Task[_]],
+    val stageId: Int,
+    val attempt: Int,
+    val priority: Int,
+    val properties: Properties) {
+    val id: String = stageId + "." + attempt
 
-TaskSetManager:handleSuccessfulTask [calls dopCheckpoint]
--> handleTaskCompletion
-
-From within a task, get the partition number (easy), and the RDD. 
-stage.rdd
-job.partitions
-
-add RDD field to TaskContext  in submitJob
+** Task Submission
+Flow:: handleJobSubmitted -> submitStage -> submitMissingTasks -> ... 
 
 SubmitMissingTasks:: is where the actual tasks are spawned from. Not a very appropriate method name.
 submitTasks(new TaskSet(tasks.toArray))
 
-TaskSet::Just a type
+TaskSet:: Just a type
 
-submitTasks::
+submitTasks:: createTaskSetManager ; activeTaskSets ; addTaskSetManager
 
+Flow:: TaskSetManager:resourceOffer->DAGScheduler:handleBeginEvent -> ExecutorAllocationManager:onTaskStart
 
-handleJobSubmitted -> submitStage -> submitMissingTasks -> ... 
+** Task End
 
-cacheLocs array has partition location information. use this?
+TaskSetManager:handleSuccessfulTask [calls dopCheckpoint] -> handleTaskCompletion
+
+*** Required Checkpointing Information
+Already:: already checkpointed or not
+job:: obv
+stage:: = stageIdToStage.get(task.stageId)
+RDD:: = from stage.rdd
+Partition:: partition id
+location:: Map of partition->location. cacheLocs array has partition location information. use this?
+
+add RDD field to TaskContext  in submitJob
 
 
 * 6 Instrument Task-End

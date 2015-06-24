@@ -693,6 +693,7 @@ Number of partitions already decided?
     // In that case, we wouldn't have the stage anymore in stageIdToStage.
     val stageAttemptId = stageIdToStage.get(task.stageId).map(_.latestInfo.attemptId).getOrElse(-1)
     listenerBus.post(SparkListenerTaskStart(task.stageId, stageAttemptId, taskInfo))
+    //ExecutorAllocationManager acts
     submitWaitingStages()
   }
 
@@ -874,6 +875,7 @@ Number of partitions already decided?
       }
     }
     //tasks is of type List[partition-num, part, locs, ResultTask(id,binary,part,local,id)]
+
     if (tasks.size > 0) {
       logInfo("Submitting " + tasks.size + " missing tasks from " + stage + " (" + stage.rdd + ")")
       stage.pendingTasks ++= tasks

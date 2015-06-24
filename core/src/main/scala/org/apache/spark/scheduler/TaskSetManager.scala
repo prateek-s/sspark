@@ -136,6 +136,9 @@ private[spark] class TaskSetManager(
   // Task index, start and finish time for each task attempt (indexed by task ID)
   val taskInfos = new HashMap[Long, TaskInfo]
 
+  //Which tasks have been checkpointed
+  val checkpointedTasks = new ArrayBuffer[Int]
+
   // How frequently to reprint duplicate exceptions in full, in milliseconds
   val EXCEPTION_PRINT_INTERVAL =
     conf.getLong("spark.logging.exceptionPrintInterval", 10000)
@@ -486,7 +489,7 @@ private[spark] class TaskSetManager(
           val taskName = s"task ${info.id} in stage ${taskSet.id}"
           logInfo("Starting %s (TID %d, %s, %s, %d bytes)".format(
               taskName, taskId, host, taskLocality, serializedTask.limit))
-
+          //Task serialized. When is the actual code run?? 
           sched.dagScheduler.taskStarted(task, info)
           return Some(new TaskDescription(taskId = taskId, attemptNumber = attemptNum, execId,
             taskName, index, serializedTask))
@@ -609,6 +612,9 @@ private[spark] class TaskSetManager(
     }
   }
 
+  def pCheckpoint(tid: Long, info, index) = {}
+
+
   /**
    * Marks the task as successful and notifies the DAGScheduler that a task has ended.
    */
@@ -628,16 +634,16 @@ private[spark] class TaskSetManager(
       
       //XXX:Checkpoint HERE. Update various other RDD info
       //Need: RDD information, taskInfos, task number, actual partition.
-      if(info.pCheckpointed()) {
-        logInfo("Task already checkpointed : %d").format(tid) 
-      }
+      // if(info.pCheckpointed()) {
+      //   logInfo("Task already checkpointed : %d").format(tid) 
+      // }
 
-      val ckptresult = dopCheckpoint(tid, info)
-      if (ckptresult == true) {
-        logInfo("Partiton Checkpoint Success")
-      } else {
-        logInfo("FAILED Partition Checkpoint. REASON:") 
-      }
+      // val ckptresult = pCheckpoint(tid, info)
+      // if (ckptresult == true) {
+      //   logInfo("Partiton Checkpoint Success")
+      // } else {
+      //   logInfo("FAILED Partition Checkpoint. REASON:") 
+      // }
 
       if (tasksSuccessful == numTasks) {
         isZombie = true
