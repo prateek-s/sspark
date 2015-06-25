@@ -70,8 +70,36 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     RDDCheckpointData.synchronized { cpFile }
   }
 
+/**
+  * Called from the scheduler via RDD. Who makes the decision to checkpoint or not? 
+  * Scheduler, TaskSetManager, RDD, RDDCheckpointData ?
+  * RDD: Has access to graph. RDDs already marked for checkpointing. 
+  * Need: Partition size, estimated recompute cost.
+  * 
+  */
   def CheckpointPartitionActual (partitionId: Int) {
     //Write the partition here. Partition ID is a Task parameter.
+    // Create the output path for the checkpoint
+    val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)
+    val fs = path.getFileSystem(rdd.context.hadoopConfiguration)
+    if (!fs.mkdirs(path)) {
+      throw new SparkException("Failed to create checkpoint path " + path)
+    }
+
+    // Save to file, and reload it as an RDD
+    val broadcastedConf = rdd.context.broadcast(
+      new SerializableWritable(rdd.context.hadoopConfiguration))
+    /* runJob(rdd, iterator => something, result _, partition list, false) underscore=partially applied function*/
+    val partitionToCkpt = List(partitionId)
+ 
+    rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)
+    
+    // val newRDD = new CheckpointRDD[T](rdd.context, path.toString)
+    // if (newRDD.partitions.size != rdd.partitions.size) {
+    //   throw new SparkException(
+    //     "Checkpoint RDD " + newRDD + "(" + newRDD.partitions.size + ") has different " +
+    //       "number of partitions than original RDD " + rdd + "(" + rdd.partitions.size + ")")
+    // }
 
     return 1
   }
@@ -99,7 +127,9 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     // Save to file, and reload it as an RDD
     val broadcastedConf = rdd.context.broadcast(
       new SerializableWritable(rdd.context.hadoopConfiguration))
-    rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _)
+    /* runJob(rdd, iterator => something, result _, partition list, false) underscore=partially applied function*/
+    rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, 0 until rdd.partitions.size, false)
+    
     val newRDD = new CheckpointRDD[T](rdd.context, path.toString)
     if (newRDD.partitions.size != rdd.partitions.size) {
       throw new SparkException(

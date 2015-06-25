@@ -901,13 +901,14 @@ Number of partitions already decided?
 
 
   /**
-    * Checkpoint a Task's partition here.
+    * Checkpoint a Task's partition.
     */
   def checkpointTask(task: Task[_]): Int = {
     val stage = stageIdToStage(task.stageId)
     val rdd = stage.rdd
     val partitionId: Int = task.partitionId
-    rdd.doCheckpointPartition(partitionId)
+//    if(shouldCheckpointTask)
+      rdd.doCheckpointPartition(partitionId)
     return 1
   }
 

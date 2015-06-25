@@ -84,7 +84,8 @@ private[spark] object CheckpointRDD extends Logging {
     "part-%05d".format(splitId)
   }
 
-  //Is fed an iteration of partitions through runJob 
+  /**Is fed an iteration of partitions through runJob  
+    */
   def writeToFile[T: ClassTag](
       path: String,
       broadcastedConf: Broadcast[SerializableWritable[Configuration]],
@@ -129,6 +130,9 @@ private[spark] object CheckpointRDD extends Logging {
       }
     }
   }
+
+
+
 
   def readFromFile[T](
       path: Path,
