@@ -1428,12 +1428,13 @@ abstract class RDD[T: ClassTag](
     }
   }
 
-  def doCheckpointPartition(/* Partition ID*/) {
+  def doCheckpointPartition(partitionId: Int) {
     //Check Bitmap. If falls within checkpointed region, exit.
     //checkpointData.get.CheckpointPartitionActual(id)
     //dependencies??
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
+    checkpointData.get.CheckpointPartitionActual(partitionId)
   }
 
   /**

@@ -87,7 +87,7 @@ class DAGScheduler(
   private val nextStageId = new AtomicInteger(0)
 
   private[scheduler] val jobIdToStageIds = new HashMap[Int, HashSet[Int]]
-  private[scheduler] val stageIdToStage = new HashMap[Int, Stage]
+  val stageIdToStage = new HashMap[Int, Stage]
   private[scheduler] val shuffleToMapStage = new HashMap[Int, Stage]
   private[scheduler] val jobIdToActiveJob = new HashMap[Int, ActiveJob]
 
@@ -159,6 +159,12 @@ class DAGScheduler(
     eventProcessLoop.post(
       CompletionEvent(task, reason, result, accumUpdates, taskInfo, taskMetrics))
   }
+
+  /** Called to Checkpoint a partition
+    */
+  // def taskCheckpoint(task: Task[_]) {
+  //   eventProcessLoop.post(checkpointTask(task))
+  // }
 
   /**
    * Update metrics for in-progress tasks and let the master know that the BlockManager is still
@@ -600,6 +606,7 @@ Number of partitions already decided?
     submitWaitingStages()
   }
 
+
   /**
    * Check for waiting or failed stages which are now eligible for resubmission.
    * Ordinarily run on every iteration of the event loop.
@@ -892,6 +899,18 @@ Number of partitions already decided?
     }
   }
 
+
+  /**
+    * Checkpoint a Task's partition here.
+    */
+  def checkpointTask(task: Task[_]): Int = {
+    val stage = stageIdToStage(task.stageId)
+    val rdd = stage.rdd
+    val partitionId: Int = task.partitionId
+    rdd.doCheckpointPartition(partitionId)
+    return 1
+  }
+
   /** Merge updates from a task to our local accumulator values */
   private def updateAccumulators(event: CompletionEvent): Unit = {
     val task = event.task
@@ -944,6 +963,8 @@ Number of partitions already decided?
       // Skip all the actions if the stage has been cancelled.
       return
     }
+
+    checkpointTask(task)
 
     val stage = stageIdToStage(task.stageId)
     event.reason match {
@@ -1405,6 +1426,9 @@ private[scheduler] class DAGSchedulerEventProcessLoop(dagScheduler: DAGScheduler
 
     case ResubmitFailedStages =>
       dagScheduler.resubmitFailedStages()
+
+    // case checkpointTask(task) =>
+    //   dagScheduler.checkpointTask(task)
   }
 
   override def onError(e: Throwable): Unit = {

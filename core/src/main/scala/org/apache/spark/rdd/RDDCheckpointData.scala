@@ -70,10 +70,10 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     RDDCheckpointData.synchronized { cpFile }
   }
 
-  def CheckpointPartitionActual (/* Partition ID, atleast? */) {
+  def CheckpointPartitionActual (partitionId: Int) {
     //Write the partition here. Partition ID is a Task parameter.
 
-    
+    return 1
   }
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.

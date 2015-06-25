@@ -613,19 +613,12 @@ private[spark] class TaskSetManager(
   }
 
   def pCheckpoint(tid: Long) = {
-    //Check if already checkpointed.
-    //Checkpoint
     val info = taskInfos(tid)
     val index = info.index
     //checkpointedTasks.append(index)
+    val task = tasks(index)
 
-    //val task = tasks.tid
-    //val stage = stageIdToStage.get(task.stageId)
-    //val rdd = stage.rdd
-    //val partition = id 
-
-    //do actual checkpointing here?
-
+    //sched.dagScheduler.taskCheckpoint(task)
   }
 
 
@@ -646,7 +639,7 @@ private[spark] class TaskSetManager(
       // Mark successful and stop if all the tasks have succeeded.
       successful(index) = true
 
-      pCheckpoint(tid) 
+      //pCheckpoint(tid) 
 
       if (tasksSuccessful == numTasks) {
         isZombie = true
