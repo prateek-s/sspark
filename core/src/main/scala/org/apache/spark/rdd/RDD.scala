@@ -21,6 +21,7 @@ import java.util.Random
 
 import scala.collection.{mutable, Map}
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 import scala.reflect.{classTag, ClassTag}
 
@@ -1428,6 +1429,8 @@ abstract class RDD[T: ClassTag](
     }
   }
 
+  val SavedPartitions = new ListBuffer[Int]
+
   def doCheckpointPartition(partitionId: Int) {
     //Check Bitmap. If falls within checkpointed region, exit.
     //checkpointData.get.CheckpointPartitionActual(id)
@@ -1435,6 +1438,13 @@ abstract class RDD[T: ClassTag](
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
     checkpointData.get.CheckpointPartitionActual(partitionId)
+    doneCheckpointing(partitionId)
+  }
+
+
+  def doneCheckpointing(partitionId: Int) {
+    //add it to the bitmap... ?
+    SavedPartitions += partitionId 
   }
 
   /**

@@ -70,6 +70,12 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     RDDCheckpointData.synchronized { cpFile }
   }
 
+
+  def doneCheckpointing(partitionId: Int) {
+    //add it to the bitmap... ?
+
+  }
+
 /**
   * Called from the scheduler via RDD. Who makes the decision to checkpoint or not? 
   * Scheduler, TaskSetManager, RDD, RDDCheckpointData ?
@@ -94,13 +100,6 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
  
     rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)
     
-    // val newRDD = new CheckpointRDD[T](rdd.context, path.toString)
-    // if (newRDD.partitions.size != rdd.partitions.size) {
-    //   throw new SparkException(
-    //     "Checkpoint RDD " + newRDD + "(" + newRDD.partitions.size + ") has different " +
-    //       "number of partitions than original RDD " + rdd + "(" + rdd.partitions.size + ")")
-    // }
-
     return 1
   }
 
