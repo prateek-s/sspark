@@ -276,6 +276,7 @@ abstract class RDD[T: ClassTag](
    */
   private[spark] def computeOrReadCheckpoint(split: Partition, context: TaskContext): Iterator[T] =
   {
+    logInfo("<<<< IN computeOrReadCheckpoint : %d".format(split.index)) ;
     //Recursion. iterator calls getOrCompute
     if (isCheckpointed) firstParent[T].iterator(split, context) else compute(split, context)
   }
@@ -1437,6 +1438,10 @@ abstract class RDD[T: ClassTag](
     //dependencies??
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
+    val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
+    if(!finegrainedOn)
+      return
+
     checkpointData.get.CheckpointPartitionActual(partitionId)
     doneCheckpointing(partitionId)
   }

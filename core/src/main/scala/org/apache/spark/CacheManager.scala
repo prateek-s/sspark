@@ -40,7 +40,8 @@ private[spark] class CacheManager(blockManager: BlockManager) extends Logging {
       storageLevel: StorageLevel): Iterator[T] = {
 
     val key = RDDBlockId(rdd.id, partition.index)
-    logDebug(s"Looking for partition $key")
+    logDebug(s"getOrCompute: Looking for partition $key")
+    logDebug("getOrCompute: Partition ID %s".format(partition.index)) 
     blockManager.get(key) match {
       case Some(blockResult) =>
         // Partition is already materialized, so just return its values

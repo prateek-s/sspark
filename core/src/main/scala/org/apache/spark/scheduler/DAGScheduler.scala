@@ -907,8 +907,8 @@ Number of partitions already decided?
     val stage = stageIdToStage(task.stageId)
     val rdd = stage.rdd
     val partitionId: Int = task.partitionId
-//    if(shouldCheckpointTask)
-      rdd.doCheckpointPartition(partitionId)
+
+    rdd.doCheckpointPartition(partitionId)
     return 1
   }
 
