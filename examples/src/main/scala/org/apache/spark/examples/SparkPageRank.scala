@@ -47,18 +47,21 @@ object SparkPageRank {
       System.err.println("Usage: SparkPageRank <file> <iter>")
       System.exit(1)
     }
-
+    System.err.println("MODIFIED TO CHECKPOINT")
     showWarning()
 
     val sparkConf = new SparkConf().setAppName("PageRank")
     val iters = if (args.length > 0) args(1).toInt else 10
     val ctx = new SparkContext(sparkConf)
     val lines = ctx.textFile(args(0), 1)
+
     val links = lines.map{ s =>
       val parts = s.split("\\s+")
       (parts(0), parts(1))
-    }.distinct().groupByKey().cache()
+    }.distinct().groupByKey()
+    links.checkpoint()
     var ranks = links.mapValues(v => 1.0)
+    ranks.checkpoint()
 
     for (i <- 1 to iters) {
       val contribs = links.join(ranks).values.flatMap{ case (urls, rank) =>

@@ -71,11 +71,6 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
   }
 
 
-  def doneCheckpointing(partitionId: Int) {
-    //add it to the bitmap... ?
-
-  }
-
 /**
   * Called from the scheduler via RDD. Who makes the decision to checkpoint or not? 
   * Scheduler, TaskSetManager, RDD, RDDCheckpointData ?
@@ -115,7 +110,6 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
         return
       }
     }
-
     // Create the output path for the checkpoint
     val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)
     val fs = path.getFileSystem(rdd.context.hadoopConfiguration)

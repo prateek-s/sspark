@@ -1438,6 +1438,7 @@ abstract class RDD[T: ClassTag](
     //dependencies??
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
+    logInfo("CONF IS: %s".format(conf.toString()))
     val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
     if(!finegrainedOn)
       return
