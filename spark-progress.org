@@ -40,6 +40,9 @@ ctags -e -R .
 -e option generates for emacs
 s-. defined as find-tag-other-window, M-* too cumbersome. M-,
 
+sctags compiles, but not runs
+
+** Scala outline popup
 
 * 2 Run Tests. Modify few sample programs
 
@@ -154,6 +157,22 @@ rdd.scala:markCheckpointed . When checkpointed, an RDDs dependencies and *partit
 ** PageRank
 PageRank with full livejournal graph does not run on a single obelix node due to a variety of ut-of-memory conditions. Fixed by sampling the rdd (10%). Take(10000) returns an array, not an RDD.
 Single iteration takes about ~3 minutes
+
+* Memory
+Memoryblock manager maintains free space information.
+Large data sizes cause plethora of out-of-memory conditions. This is bad.
+Partitioning, scheduling, etc should carefully consider how much free memory they have, and take that into account when making decisions.
+
+If a partition is too big to fit into memory, data has be spilled on disk. How are users to figure out how large their executors should be? 
+
+** Number of Partitions
+For the initial textFile RDD, the defaultMinPartitions = min(parallelism,2). Parallelism is total number of cores
+
+executor.cores important. In standalone mode, each executor gets all cores. With yarn, only one. 
+The number of executors is determined by the amount of free memory???
+
+default.parallelism seems to work. No luck with executor.cores
+
 
 * TODO
 - checkpointing partitions
