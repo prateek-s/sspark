@@ -154,7 +154,7 @@ private[spark] class TaskSchedulerImpl(
     waitBackendReady()
   }
 
-/* Why are these overriden? Impl vs class definitions? */
+/* Why are these overriden? Impl vs class definitions? Ruins ctags. */
   override def submitTasks(taskSet: TaskSet) {
     val tasks = taskSet.tasks
     logInfo("Adding task set " + taskSet.id + " with " + tasks.length + " tasks")

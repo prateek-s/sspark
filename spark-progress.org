@@ -8,7 +8,6 @@ func.asInstanceOf[Type] casts func to Type
 Partial functions, pattern matching. 15.7
 
 
-
 * 1 Build 
 Download 1.3.1
 
@@ -24,6 +23,17 @@ sbt/sbt clean assembly
 
 Could not build the examples again after modification.
 SBT downloads everything from the internet all over again, starting from scala.jar
+
+** Flow
+Make code changes on local. 
+
+** Building Examples
+Drop into the sbt shell
+>project examples
+>assembly
+Why does the non-interactive version of this below not work? aargh.
+sbt project examples/ selects the project. Then run sbt assembly-
+
 
 ** Ctags
 ctags -e -R . 
@@ -139,6 +149,11 @@ isCheckpointed -> ispartitionCheckpointed
 CacheManager.scala:getOrCompute
 
 rdd.scala:markCheckpointed . When checkpointed, an RDDs dependencies and *partitions* are cleared. The new parent is the checkpointed RDD file.
+
+* Benchmarks
+** PageRank
+PageRank with full livejournal graph does not run on a single obelix node due to a variety of ut-of-memory conditions. Fixed by sampling the rdd (10%). Take(10000) returns an array, not an RDD.
+Single iteration takes about ~3 minutes
 
 * TODO
 - checkpointing partitions

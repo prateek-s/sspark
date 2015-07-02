@@ -901,7 +901,7 @@ Number of partitions already decided?
 
 
   /**
-    * Checkpoint a Task's partition.
+    * Checkpoint a Task's partition. Called at the end of a task
     */
   def checkpointTask(task: Task[_]): Int = {
     val stage = stageIdToStage(task.stageId)
