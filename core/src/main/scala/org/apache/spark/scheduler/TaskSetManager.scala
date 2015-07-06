@@ -628,7 +628,7 @@ private[spark] class TaskSetManager(
   def handleSuccessfulTask(tid: Long, result: DirectTaskResult[_]) = {
     val info = taskInfos(tid)
     val index = info.index
-    info.markSuccessful()
+    info.markSuccessful() //finish time recorded here
     removeRunningTask(tid)
     sched.dagScheduler.taskEnded(
       tasks(index), Success, result.value(), result.accumUpdates, info, result.metrics)
