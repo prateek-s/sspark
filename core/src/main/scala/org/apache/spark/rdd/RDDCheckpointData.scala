@@ -50,7 +50,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
   // The file to which the associated RDD has been checkpointed to
   @transient var cpFile: Option[String] = None
 
-  // The CheckpointRDD created from the checkpoint file, that is, the new parent the associated RDD.
+  // The CheckpointRDD created from the checkpoint file, that is, the new parent of the associated RDD.
   var cpRDD: Option[RDD[T]] = None
 
   // Mark the RDD for checkpointing

@@ -241,6 +241,7 @@ abstract class RDD[T: ClassTag](
   final def iterator(split: Partition, context: TaskContext): Iterator[T] = {
     //storage level none => no disk, no memory
     if (storageLevel != StorageLevel.NONE) {
+      //stored in disk or memory, so cache manager probably has it.
       SparkEnv.get.cacheManager.getOrCompute(this, split, context, storageLevel)
     } else {
       computeOrReadCheckpoint(split, context)
@@ -276,8 +277,19 @@ abstract class RDD[T: ClassTag](
    */
   private[spark] def computeOrReadCheckpoint(split: Partition, context: TaskContext): Iterator[T] =
   {
-    //Recursion. iterator calls getOrCompute
-    if (isCheckpointed) firstParent[T].iterator(split, context) else compute(split, context)
+    if(optFineGrainedCkpting) {
+      if(savedPartition(split, context)) {
+        //Where is the checkpoint file actually being read!?
+      } else
+        compute(split, context)
+    }else {
+      if (isCheckpointed)
+        //H1: Recursion. But why is the parent needed if it is checkpointed.
+        //H2: This RDD's parent is a CheckpointRDD. Checkpoint=>Dependencies cleared. 
+        firstParent[T].iterator(split, context) 
+      else
+        compute(split, context)
+    }
   }
 
   // Transformations (return a new RDD)
@@ -1450,7 +1462,9 @@ abstract class RDD[T: ClassTag](
   /**
    * Changes the dependencies of this RDD from its original parents to a new RDD (`newRDD`)
    * created from the checkpoint file, and forget its old dependencies and partitions.
-   */
+    */
+  //Where is the new RDD being assigned as a dependency??
+  //arg is 'newRDD'. Unused!
   private[spark] def markCheckpointed(checkpointRDD: RDD[_]) {
     clearDependencies()
     partitions_ = null
