@@ -1469,25 +1469,43 @@ abstract class RDD[T: ClassTag](
 
   val SavedPartitions = new ListBuffer[Int]
 
+  /**
+    * Called from DAG scheduler at the end of the task. 
+    */
   def doCheckpointPartition(partitionId: Int) {
     //Check Bitmap. If falls within checkpointed region, exit.
     //checkpointData.get.CheckpointPartitionActual(id)
     //dependencies??
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
-    logInfo("CONF IS: %s".format(conf.toString()))
+
     val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
+    //Move to RDD class initialization initialization
     if(!finegrainedOn)
       return
 
+    if (shouldCheckpointRDD(partitionId))
+    //Based on Policy etc
     checkpointData.get.CheckpointPartitionActual(partitionId)
     doneCheckpointing(partitionId)
   }
 
+  /**
+    * Based on policy, decide if RDD should be checkpointed. Decide
+    * the first time this function is called and then return the
+    * stored result the next time.
+    */
+  def shouldCheckpointRDD(partitionId: Int):Boolean = {
 
+  }
+
+  /** 
+    * called after data has been saved. Update status.
+    */
   def doneCheckpointing(partitionId: Int) {
     //add it to the bitmap... ?
-    SavedPartitions += partitionId 
+    SavedPartitions += partitionId
+    //if all saved, mark entire RDD as checkpointed and change parents etc
   }
 
   /**

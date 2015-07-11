@@ -180,6 +180,12 @@ What is needed is to bypass that mechanism. If partcheckpointing is enabled, and
 
 - Garbage collection of "unreachable" checkpointedRDDs? Some descendent is checkpointed => delete?
 
+- Mark isCheckpointed once all partitions have been saved, plus do the dependency pruning and restore via CheckpointRDD
+
+- shouldCheckpointRDD
+
+- Store Task metrics somewhere convenient. Access required for checkpointing policy
+
 * TODO
 - checkpointing partitions
 - recursive checkpointing
