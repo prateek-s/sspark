@@ -272,14 +272,50 @@ abstract class RDD[T: ClassTag](
     ancestors.filterNot(_ == this).toSeq
   }
 
+  /* See if we have the partition saved? */
+  def rescuePartition(split: Partition, context: TaskContext) = {
+    //Check the savedpartitionbitmap
+    //Also store the locations of the saved partitions here?
+
+  //   val file = new Path(checkpointPath, CheckpointRDD.splitIdToFile(split.index))
+  //   CheckpointRDD.readFromFile(file, broadcastedConf, context)
+
+  // def readFromFile[T](
+  //     path: Path,
+  //     broadcastedConf: Broadcast[SerializableWritable[Configuration]],
+  //     context: TaskContext
+  //   ): Iterator[T] = {
+  //   val env = SparkEnv.get
+  //   val fs = path.getFileSystem(broadcastedConf.value.value)
+  //   val bufferSize = env.conf.getInt("spark.buffer.size", 65536)
+  //   val fileInputStream = fs.open(path, bufferSize)
+  //   val serializer = env.serializer.newInstance()
+  //   val deserializeStream = serializer.deserializeStream(fileInputStream)
+
+  //   // Register an on-task-completion callback to close the input stream.
+  //   context.addTaskCompletionListener(context => deserializeStream.close())
+
+  //   deserializeStream.asIterator.asInstanceOf[Iterator[T]]
+  // }
+
+  }
+
   /**
    * Compute an RDD partition or read it from a checkpoint if the RDD is checkpointing.
    */
   private[spark] def computeOrReadCheckpoint(split: Partition, context: TaskContext): Iterator[T] =
   {
+    /* TODO: Partition granularity? */
     logInfo("<<<< IN computeOrReadCheckpoint : %d".format(split.index)) ;
-    //Recursion. iterator calls getOrCompute
-    if (isCheckpointed) firstParent[T].iterator(split, context) else compute(split, context)
+    var partcheckopt = false
+    if(partcheckopt) {
+      rescuePartition(split, context)
+    }
+    else {
+      //Check if the fine grained checkpointing is on, else
+      //NOT Recursion. iterator calls getOrCompute, but firstParent is the checkpointedRDD, and it reads from the checkpoint
+      if (isCheckpointed) firstParent[T].iterator(split, context) else compute(split, context)
+    }
   }
 
   // Transformations (return a new RDD)
