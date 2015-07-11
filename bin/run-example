@@ -61,7 +61,8 @@ fi
 
 export SPARK_EXAMPLES_JAR
 
-EXAMPLE_MASTER=${MASTER:-"local[*]"}
+#EXAMPLE_MASTER=${MASTER:-"local[*]"}
+EXAMPLE_MASTER=${MASTER:-"spark://obelix72:7077"}
 
 if [[ ! $EXAMPLE_CLASS == org.apache.spark.examples* ]]; then
   EXAMPLE_CLASS="org.apache.spark.examples.$EXAMPLE_CLASS"

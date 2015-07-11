@@ -84,7 +84,7 @@ private[spark] object CheckpointRDD extends Logging {
     "part-%05d".format(splitId)
   }
 
-  /** Is fed an iteration of partitions through runJob
+  /** Is fed an iteration of partitions through runJob. Partially applied function
     */
   def writeToFile[T: ClassTag](
       path: String,

@@ -277,19 +277,9 @@ abstract class RDD[T: ClassTag](
    */
   private[spark] def computeOrReadCheckpoint(split: Partition, context: TaskContext): Iterator[T] =
   {
-    if(optFineGrainedCkpting) {
-      if(savedPartition(split, context)) {
-        //Where is the checkpoint file actually being read!?
-      } else
-        compute(split, context)
-    }else {
-      if (isCheckpointed)
-        //H1: Recursion. But why is the parent needed if it is checkpointed.
-        //H2: This RDD's parent is a CheckpointRDD. Checkpoint=>Dependencies cleared. 
-        firstParent[T].iterator(split, context) 
-      else
-        compute(split, context)
-    }
+    logInfo("<<<< IN computeOrReadCheckpoint : %d".format(split.index)) ;
+    //Recursion. iterator calls getOrCompute
+    if (isCheckpointed) firstParent[T].iterator(split, context) else compute(split, context)
   }
 
   // Transformations (return a new RDD)
@@ -1449,6 +1439,11 @@ abstract class RDD[T: ClassTag](
     //dependencies??
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
+    logInfo("CONF IS: %s".format(conf.toString()))
+    val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
+    if(!finegrainedOn)
+      return
+
     checkpointData.get.CheckpointPartitionActual(partitionId)
     doneCheckpointing(partitionId)
   }
