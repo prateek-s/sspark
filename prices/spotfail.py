@@ -31,10 +31,10 @@ def to_dist(failures):
     plot_stuff(failures,dis)
 
 def plot_stuff(f,dis,plot=True,pickle=False):
-    num_bins = 20 #who really knows?
-    h = plt.hist(f,num_bins,normed=True,color='black')
+    num_bins = 40 #who really knows?
+    h = plt.hist(f,num_bins,color='0.9')
     size=max(f)
-    dist_names = ['expon', 'pareto'] #, 'gamma', 'beta', 'rayleigh', 'norm', 'pareto']
+    dist_names = ['expon', 'pareto', 'gamma', 'beta', 'rayleigh', 'norm', 'pareto']
     x = scipy.arange(size)
     for dist_name in dist_names:
         dist = getattr(scipy.stats, dist_name)
@@ -44,7 +44,7 @@ def plot_stuff(f,dis,plot=True,pickle=False):
         pdf_fitted = dist.pdf(x, *param[:-2], loc=param[-2], scale=param[-1]) * size
         plt.plot(pdf_fitted, label=dist_name)
 
-    
+    plt.legend(loc='upper right')
     print "Plot:"
     plt.show()
     
