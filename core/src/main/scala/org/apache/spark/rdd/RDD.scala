@@ -1456,6 +1456,13 @@ abstract class RDD[T: ClassTag](
    * doCheckpoint() is called recursively on the parent RDDs.
    */
   private[spark] def doCheckpoint() {
+
+    val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
+      //Move to RDD class initialization initialization
+    if(finegrainedOn) {
+      //mark for checkpointing?
+    }
+
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
       if (checkpointData.isDefined) {
@@ -1467,7 +1474,7 @@ abstract class RDD[T: ClassTag](
     }
   }
 
-  val SavedPartitions = new ListBuffer[Int]
+  val SavedPartitions = new ListBuffer[Int] //Can be just an array
 
   /**
     * Called from DAG scheduler at the end of the task. 

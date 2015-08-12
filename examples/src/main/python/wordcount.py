@@ -22,16 +22,35 @@ from pyspark import SparkContext
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: wordcount <file>"
-        exit(-1)
+    # if len(sys.argv) != 2:
+    #     print >> sys.stderr, "Usage: wordcount <file>"
+    #     exit(-1)
     sc = SparkContext(appName="PythonWordCount")
-    lines = sc.textFile(sys.argv[1], 1)
-    counts = lines.flatMap(lambda x: x.split(' ')) \
-                  .map(lambda x: (x, 1)) \
-                  .reduceByKey(add)
-    output = counts.collect()
-    for (word, count) in output:
-        print "%s: %i" % (word, count)
+    d = range(1,100000)
+    frac = 0.25 
+    sd = sc.parallelize(d)
+
+    while True:
+        dm1 = sd.map(lambda x: x)
+        dm2 = sd.map(lambda x: frac*x*x)
+        dr1 = dm1.reduce(lambda x,y:x+y)
+        dr2 = dm1.reduce(lambda x,y:x+y)
+        print "------------ DECISION POINT-----------------"
+        if dr1 > dr2 :
+            print "dr1 is greater"
+            sd.map(lambda x:x).collect()
+            break
+        else:
+            print "dr2 is greater"
+            frac = frac/10.0 
+            sd.map(lambda x: frac*x*x).collect()
+
+    # lines = sc.textFile(sys.argv[1], 1)
+    # counts = lines.flatMap(lambda x: x.split(' ')) \
+    #               .map(lambda x: (x, 1)) \
+    #               .reduceByKey(add)
+    # output = counts.collect()
+    # for (word, count) in output:
+    #     print "%s: %i" % (word, count)
 
     sc.stop()

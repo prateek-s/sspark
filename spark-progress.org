@@ -27,7 +27,8 @@ SBT downloads everything from the internet all over again, starting from scala.j
 ** Flow
 Make code changes on local. 
 
-** Building Examples
+** Buildin
+g Examples
 Drop into the sbt shell
 >project examples
 >assembly
@@ -180,11 +181,38 @@ What is needed is to bypass that mechanism. If partcheckpointing is enabled, and
 
 - Garbage collection of "unreachable" checkpointedRDDs? Some descendent is checkpointed => delete?
 
+
 - Mark isCheckpointed once all partitions have been saved, plus do the dependency pruning and restore via CheckpointRDD
 
 - shouldCheckpointRDD
 
 - Store Task metrics somewhere convenient. Access required for checkpointing policy
+=======
+
+* Resolving the Control-flow DAG question
+
+Confusion: How can the RDD DAG be generated before a job starts in the
+presence of control-flow operations (if-else, loops)?
+
+Short Answer: The complete DAG for a Spark program is not known in advance
+
+Explanation: The confusion arises because of Spark's
+terminology. Specifically, a Spark program is NOT EQUAL to a job.
+Instead, a "Spark Job" is a DAG of RDD transformations, and a Spark
+program (which is the actual job) is composed of multiple "Spark
+Jobs".  
+
+Statements in a user program are interpreted dispatched to
+Spark. There is no static analysis, but lazy evaluation ensures that
+all the RDD transformations are submitted to Spark as part of the
+"Spark Job" before execution actually starts.
+
+Effect on models: The dynamic DAG means there is no easy way of
+determining the total number of RDDs or job-progress.
+
+
+
+
 
 * TODO
 - checkpointing partitions
@@ -193,3 +221,9 @@ What is needed is to bypass that mechanism. If partcheckpointing is enabled, and
 - array of checkpointed partitions
 - cache/block manager
 - 
+These "Spark Jobs" are submitted to Spark by the Scala interpreter,
+and statements are dispatched to Spark
+
+why is rdd.doCheckpoint called in
+SparkContext.scala:runJob ???  spark.logLineage set to true
+
