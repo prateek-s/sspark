@@ -149,6 +149,9 @@ abstract class RDD[T: ClassTag](
     this
   }
 
+  /* 0=Undecided. 1=True, -1=False */
+  var ckptFlag: Int = 0 
+
   /**
    * Set this RDD's storage level to persist its values across operations after the first time
    * it is computed. This can only be used to assign a new storage level if the RDD does not
@@ -1491,10 +1494,11 @@ abstract class RDD[T: ClassTag](
     if(!finegrainedOn)
       return
 
-    if (shouldCheckpointRDD(partitionId))
+    if (shouldCheckpointRDD(partitionId)) {
     //Based on Policy etc
-    checkpointData.get.CheckpointPartitionActual(partitionId)
-    doneCheckpointing(partitionId)
+      checkpointData.get.CheckpointPartitionActual(partitionId)
+      doneCheckpointing(partitionId)
+    }
   }
 
   /**
@@ -1503,7 +1507,13 @@ abstract class RDD[T: ClassTag](
     * stored result the next time.
     */
   def shouldCheckpointRDD(partitionId: Int):Boolean = {
+    //get the policy from the configuration
+    //ALL, periodic, OPT. shuffle. 
+    if(ckptFlag==1) return true 
+    if(ckptFlag==-1) return False
+    if(ckptFlag==0) { //undecided
 
+    }
   }
 
   /** 

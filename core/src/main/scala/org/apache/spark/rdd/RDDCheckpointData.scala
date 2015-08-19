@@ -72,10 +72,11 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
 
 
 /**
+  * Similar to doCheckpoint below, except it acts only on 1 partition
   * Called from the scheduler via RDD. Who makes the decision to checkpoint or not? 
   * Scheduler, TaskSetManager, RDD, RDDCheckpointData ?
   * RDD: Has access to graph. RDDs already marked for checkpointing. 
-  * Need: Partition size, estimated recompute cost.
+  * Need: Partition size, estmimated recompute cost.
   * 
   */
   def CheckpointPartitionActual (partitionId: Int) {
@@ -94,8 +95,12 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     val partitionToCkpt = List(partitionId)
  
     rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)
-    
-    return 1
+    //Who catches the failure here? What if the partition write fails?
+    logInfo("Done checkpointing RDD " + rdd.id + ":" +partitionId+ " to " +path+ ", new parent is RDD " +newRDD.id)
+    //Right place to add to the partitions already checkpointed list.
+    //if all partitions done, then do the dependency pruning here?
+    return 1 
+
   }
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.
