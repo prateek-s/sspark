@@ -1548,21 +1548,26 @@ abstract class RDD[T: ClassTag](
 
   def policy_opt(partitionId: Int): Boolean = {
     var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF",10) //in hours float? 
-    var prev_ckpt_time:Long = sc.prev_ckpt_time ; //some systemwide global variable!
-    var current_time:Long = System.currentTimeMillis() ; //get system time somehow. Use spark's internal libs plz.
-    var delta:Double = conf.getDouble("spark.checkpointing.delta",0.01) //time to write the checkpoint
+    /* Keep the timestamps in seconds */
+    var prev_ckpt_time:Long = sc.prev_ckpt_time/1000 ; //some systemwide global variable!
+    var current_time:Long = System.currentTimeMillis()/1000 ; //get system time somehow. Use spark's internal libs plz.
+    var delta:Double = conf.getDouble("spark.checkpointing.delta",0.01) //time to write the checkpoint. ~40s
     var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
     /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
     var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
-    if (!fixed_delta) 
+    if (!fixed_delta) {
       delta = sc.prev_delta
-
+    }
     if(target_tau == 0) {
       //convert the target time and then the millis to hours thing. 
-      //target_tau = sqrt(2 delta M)
+      target_tau = math.sqrt(2*delta*MTTF)
+      //defaults: sqrt(2*0.01*10) = 0.45 hrs = 26 minutes
+      //MTTF 1 hr => 8 minutes
     }
-    if(current_time - prev_ckpt_time > target_tau) 
+    if((current_time - prev_ckpt_time) > target_tau*3600) {
+
       return true
+    }
     return false
   }
 
