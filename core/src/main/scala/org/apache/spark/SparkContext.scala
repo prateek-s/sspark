@@ -93,11 +93,11 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
   // contains a map from hostname to a list of input format splits on the host.
   private[spark] var preferredNodeLocationData: Map[String, Set[SplitInfo]] = Map()
 
-  val startTime = System.currentTimeMillis()
+  val startTime:Long = System.currentTimeMillis()
 
-  val prev_ckpt_time = System.currentTimeMillis() 
+  var prev_ckpt_time:Long = System.currentTimeMillis() 
 
-  val prev_delta = 0 
+  var prev_delta:Double = 0 
 
   @volatile private var stopped: Boolean = false
 

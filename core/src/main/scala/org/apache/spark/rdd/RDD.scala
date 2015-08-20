@@ -83,7 +83,7 @@ abstract class RDD[T: ClassTag](
     logWarning("Spark does not support nested RDDs (see SPARK-5063)")
   }
 
-  private def sc: SparkContext = {
+  def sc: SparkContext = {
     if (_sc == null) {
       throw new SparkException(
         "RDD transformations and actions can only be invoked by the driver, not inside of other " +
@@ -98,7 +98,7 @@ abstract class RDD[T: ClassTag](
   def this(@transient oneParent: RDD[_]) =
     this(oneParent.context , List(new OneToOneDependency(oneParent)))
 
-  private[spark] def conf = sc.conf
+  def conf = sc.conf
   // =======================================================================
   // Methods that should be implemented by subclasses of RDD
   // =======================================================================
@@ -276,7 +276,7 @@ abstract class RDD[T: ClassTag](
   }
 
   /* See if we have the partition saved? */
-  def rescuePartition(split: Partition, context: TaskContext) = {
+  def rescuePartition(split: Partition, context: TaskContext): Iterator[T] = {
     //Check the savedpartitionbitmap
     //Also store the locations of the saved partitions here?
 
@@ -300,7 +300,7 @@ abstract class RDD[T: ClassTag](
 
   //   deserializeStream.asIterator.asInstanceOf[Iterator[T]]
   // }
-
+    return compute(split, context)
   }
 
   /**
@@ -1511,7 +1511,7 @@ abstract class RDD[T: ClassTag](
   def shouldCheckpointRDD(partitionId: Int):Boolean = {
     //get the policy from the configuration
     //ALL, periodic, OPT. shuffle. 
-    val policystring: String = conf.getString("spark.checkpointing.policy", "None")
+    val policystring: String = conf.get("spark.checkpointing.policy", "None")
     if(ckptFlag == 1) return true 
     if(ckptFlag == -1) return false
     if(ckptFlag == 0) { //undecided, dispatch policy here.
@@ -1540,8 +1540,8 @@ abstract class RDD[T: ClassTag](
 
   def policy_opt(partitionId: Int): Boolean = {
     var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF",10) //in hours float? 
-    var prev_ckpt_time:Int = sc.prev_ckpt_time ; //some systemwide global variable!
-    var current_time:Int = System.currentTimeMillis() ; //get system time somehow. Use spark's internal libs plz.
+    var prev_ckpt_time:Long = sc.prev_ckpt_time ; //some systemwide global variable!
+    var current_time:Long = System.currentTimeMillis() ; //get system time somehow. Use spark's internal libs plz.
     var delta:Double = conf.getDouble("spark.checkpointing.delta",0) //time to write the checkpoint
     var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
     var target_tau:Double = conf.getDouble("spark.checkpointing.tau",0) ;
