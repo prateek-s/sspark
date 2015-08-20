@@ -1540,10 +1540,14 @@ abstract class RDD[T: ClassTag](
 
   def policy_opt(partitionId: Int): Boolean = {
     var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF",10) //in hours float? 
-    var prev_ckpt_time:Int = _sc.prev_ckpt_time ; //some systemwide global variable!
+    var prev_ckpt_time:Int = sc.prev_ckpt_time ; //some systemwide global variable!
     var current_time:Int = System.currentTimeMillis() ; //get system time somehow. Use spark's internal libs plz.
-    var delta:Double = conf.getDouble("spark.checkpointing.delta",0.01) //time to write the checkpoint
+    var delta:Double = conf.getDouble("spark.checkpointing.delta",0) //time to write the checkpoint
+    var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
     var target_tau:Double = conf.getDouble("spark.checkpointing.tau",0) ;
+    if (!fixed_delta) 
+      delta = sc.prev_delta
+
     if(target_tau == 0) {
       //convert the target time and then the millis to hours thing. 
       //target_tau = sqrt(2 delta M)
