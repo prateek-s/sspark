@@ -45,6 +45,23 @@ sctags compiles, but not runs
 
 ** Scala outline popup
 
+* Running
+*export SPARK_PREPEND_CLASSES=true*
+
+#RunExample script modified to connect to the exisitng master (7077 port) 
+
+#2 workers, 2 executors per worker. start-all.sh 
+
+#Out-of-memory-ish conditions in a large number of ways.
+
+#sbt/sbt project examples/
+
+**  Out of Memory conditions
+org.apache.spark.shuffle.FetchFailedException: java.lang.OutOfMemoryError: Direct buffer memory
+at org.apache.spark.shuffle.hash.BlockStoreShuffleFetcher$.org$apache$spark$shuffle$hash$BlockStoreShuf
+fleFetcher$$unpackBlock$1(BlockStoreShuffleFetcher.scala:67)
+
+
 * 2 Run Tests. Modify few sample programs
 
 SparkPi with no args. Takes a while to start up.
