@@ -97,7 +97,7 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
 
   var prev_ckpt_time:Long = System.currentTimeMillis() 
 
-  var prev_delta:Double = 0 
+  var prev_delta:Double = 0.01
 
   @volatile private var stopped: Boolean = false
 

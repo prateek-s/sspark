@@ -1550,9 +1550,10 @@ abstract class RDD[T: ClassTag](
     var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF",10) //in hours float? 
     var prev_ckpt_time:Long = sc.prev_ckpt_time ; //some systemwide global variable!
     var current_time:Long = System.currentTimeMillis() ; //get system time somehow. Use spark's internal libs plz.
-    var delta:Double = conf.getDouble("spark.checkpointing.delta",0) //time to write the checkpoint
+    var delta:Double = conf.getDouble("spark.checkpointing.delta",0.01) //time to write the checkpoint
     var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
-    var target_tau:Double = conf.getDouble("spark.checkpointing.tau",0) ;
+    /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
+    var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
     if (!fixed_delta) 
       delta = sc.prev_delta
 
@@ -1570,7 +1571,6 @@ abstract class RDD[T: ClassTag](
     */
   def doneCheckpointing(partitionId: Int) {
     //add it to the bitmap... ?
-    SavedPartitions += partitionId
     //if all saved, mark entire RDD as checkpointed and change parents etc
   }
 
