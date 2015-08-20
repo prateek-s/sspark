@@ -1479,7 +1479,16 @@ abstract class RDD[T: ClassTag](
     }
   }
 
-  val SavedPartitions = new ListBuffer[Int] //Can be just an array
+
+  val total_num_parts = partitions.size
+
+  var saved_parts : Seq[Int] = Seq() 
+
+  /** Return the total number of partitions added */
+  def addToSavedPartitions(partitionId: Int): Int  = {
+    saved_parts = saved_parts:+partitionId 
+    return saved_parts.length
+  }
 
   /**
     * Called from DAG scheduler at the end of the task. 
@@ -1498,8 +1507,7 @@ abstract class RDD[T: ClassTag](
 
     if (shouldCheckpointRDD(partitionId)) {
     //Based on Policy etc
-      checkpointData.get.CheckpointPartitionActual(partitionId)
-      doneCheckpointing(partitionId)
+      checkpointData.get.CheckpointPartitionActual(partitionId)      
     }
   }
 

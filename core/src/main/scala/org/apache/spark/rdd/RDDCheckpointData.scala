@@ -96,7 +96,6 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     val start_time:Long = System.currentTimeMillis()
     rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)
     //Who catches the failure here? What if the partition write fails?
-    logInfo("Done checkpointing RDD " + rdd.id + ":" +partitionId+ " to " +path) 
     //Right place to add to the partitions already checkpointed list.
     //if all partitions done, then do the dependency pruning here?
     val end_time:Long =  System.currentTimeMillis()
@@ -104,8 +103,28 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     //returns immediately? 
     rdd.sc.prev_delta = end_time - start_time
 
-    return 1 
+    val pdone = rdd.addToSavedPartitions(partitionId)
+    logInfo("Checkpointed Partition " + rdd.id + ":" +partitionId+ "@" + pdone + "/" + rdd.total_num_parts  +" to " +path)
 
+    if(pdone == rdd.total_num_parts) {
+      logInfo("All partitions done for "+ rdd.id + "/"+rdd.total_num_parts)
+
+      val newRDD = new CheckpointRDD[T](rdd.context, path.toString)
+      if (newRDD.partitions.size != rdd.partitions.size) {
+        throw new SparkException(
+          "Checkpoint RDD " + newRDD + "(" + newRDD.partitions.size + ") has different " +
+            "number of partitions than original RDD " + rdd + "(" + rdd.partitions.size + ")")
+      }
+      RDDCheckpointData.synchronized {
+        cpFile = Some(path.toString)
+        cpRDD = Some(newRDD)
+        rdd.markCheckpointed(newRDD)   // Update the RDD's dependencies and partitions
+        cpState = Checkpointed
+      }
+      logInfo("Finished checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
+    }
+
+    return 1 
   }
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.
