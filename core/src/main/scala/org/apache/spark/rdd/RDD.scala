@@ -1453,6 +1453,8 @@ abstract class RDD[T: ClassTag](
   // Avoid handling doCheckpoint multiple times to prevent excessive recursion
   @transient private var doCheckpointCalled = false
 
+/********************************************************************************/
+
   /**
    * Performs the checkpointing of this RDD by saving this. It is called after a job using this RDD
    * has completed (therefore the RDD has been materialized and potentially stored in memory).
@@ -1509,11 +1511,46 @@ abstract class RDD[T: ClassTag](
   def shouldCheckpointRDD(partitionId: Int):Boolean = {
     //get the policy from the configuration
     //ALL, periodic, OPT. shuffle. 
-    if(ckptFlag==1) return true 
-    if(ckptFlag==-1) return False
-    if(ckptFlag==0) { //undecided
-
+    val policystring: String = conf.getString("spark.checkpointing.policy", "None")
+    if(ckptFlag == 1) return true 
+    if(ckptFlag == -1) return false
+    if(ckptFlag == 0) { //undecided, dispatch policy here.
+      policystring match {
+        case "None" => return policy_none(partitionId)
+        case "All" => return policy_all(partitionId)
+        case "Graph" => return policy_graph(partitionId)
+        case "Opt" => return policy_opt(partitionId)
+      }
     }
+    return false 
+  }
+
+  def policy_none(partitionId: Int): Boolean ={
+    return false
+  }
+
+  def policy_all(partitionId: Int): Boolean = {
+    return true
+  }
+
+  def policy_graph(partitionId: Int): Boolean = {
+    //If this is output of a shuffle
+    return false
+  }
+
+  def policy_opt(partitionId: Int): Boolean = {
+    var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF",10) //in hours float? 
+    var prev_ckpt_time:Int = _sc.prev_ckpt_time ; //some systemwide global variable!
+    var current_time:Int = System.currentTimeMillis() ; //get system time somehow. Use spark's internal libs plz.
+    var delta:Double = conf.getDouble("spark.checkpointing.delta",0.01) //time to write the checkpoint
+    var target_tau:Double = conf.getDouble("spark.checkpointing.tau",0) ;
+    if(target_tau == 0) {
+      //convert the target time and then the millis to hours thing. 
+      //target_tau = sqrt(2 delta M)
+    }
+    if(current_time - prev_ckpt_time > target_tau) 
+      return true
+    return false
   }
 
   /** 
@@ -1524,6 +1561,8 @@ abstract class RDD[T: ClassTag](
     SavedPartitions += partitionId
     //if all saved, mark entire RDD as checkpointed and change parents etc
   }
+
+/********************************************************************************/
 
   /**
    * Changes the dependencies of this RDD from its original parents to a new RDD (`newRDD`)

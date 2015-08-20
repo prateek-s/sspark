@@ -95,6 +95,8 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
 
   val startTime = System.currentTimeMillis()
 
+  val prev_ckpt_time = System.currentTimeMillis() 
+
   @volatile private var stopped: Boolean = false
 
   private def assertNotStopped(): Unit = {
