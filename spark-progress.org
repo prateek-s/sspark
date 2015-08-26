@@ -244,3 +244,4 @@ and statements are dispatched to Spark
 why is rdd.doCheckpoint called in
 SparkContext.scala:runJob ???  spark.logLineage set to true
 
+http://www.quora.com/In-Spark-Where-is-one-RDD-which-hasnt-called-its-cache-or-persist-method-deleted
