@@ -101,13 +101,14 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     val end_time:Long =  System.currentTimeMillis()
 
     //returns immediately? 
-    rdd.sc.prev_delta = end_time - start_time
+    
+    //rdd.sc.prev_delta = end_time - start_time
 
     val pdone = rdd.addToSavedPartitions(partitionId)
-    logInfo("Checkpointed Partition " + rdd.id + ":" +partitionId+ "@" + pdone + "/" + rdd.total_num_parts  +" to " +path)
+//    logInfo("Checkpointed Partition " + rdd.id + ":" +partitionId+ "@" + pdone + "/" + rdd.total_num_parts  +" to " +path)
 
-    if(pdone == rdd.total_num_parts) {
-      logInfo("All partitions done for "+ rdd.id + "/"+rdd.total_num_parts)
+    if(pdone == 3) { //rdd.total_num_parts) {
+      //logInfo("All partitions done for "+ rdd.id + "/"+rdd.total_num_parts)
 
       val newRDD = new CheckpointRDD[T](rdd.context, path.toString)
       if (newRDD.partitions.size != rdd.partitions.size) {

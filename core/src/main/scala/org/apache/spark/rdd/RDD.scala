@@ -83,7 +83,7 @@ abstract class RDD[T: ClassTag](
     logWarning("Spark does not support nested RDDs (see SPARK-5063)")
   }
 
-  def sc: SparkContext = {
+  private def sc: SparkContext = {
     if (_sc == null) {
       throw new SparkException(
         "RDD transformations and actions can only be invoked by the driver, not inside of other " +
@@ -98,7 +98,7 @@ abstract class RDD[T: ClassTag](
   def this(@transient oneParent: RDD[_]) =
     this(oneParent.context , List(new OneToOneDependency(oneParent)))
 
-  def conf = sc.conf
+  private[spark] def conf = sc.conf
   // =======================================================================
   // Methods that should be implemented by subclasses of RDD
   // =======================================================================
@@ -1480,14 +1480,15 @@ abstract class RDD[T: ClassTag](
   }
 
 
-  val total_num_parts = partitions.size
+  //val total_num_parts = partitions.size
 
   var saved_parts : Seq[Int] = Seq() 
 
   /** Return the total number of partitions added */
   def addToSavedPartitions(partitionId: Int): Int  = {
-    saved_parts = saved_parts:+partitionId 
-    return saved_parts.length
+    //saved_parts = saved_parts:+partitionId 
+    //return saved_parts.length
+    return 0
   }
 
   /**

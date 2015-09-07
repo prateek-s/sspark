@@ -590,6 +590,7 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
    */
   def textFile(path: String, minPartitions: Int = defaultMinPartitions): RDD[String] = {
     assertNotStopped()
+    logWarning(" ----- FROM TEXT FILE VERSION  " + 3)  
     hadoopFile(path, classOf[TextInputFormat], classOf[LongWritable], classOf[Text],
       minPartitions).map(pair => pair._2.toString).setName(path)
   }
