@@ -1568,7 +1568,7 @@ abstract class RDD[T: ClassTag](
     var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
     /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
     var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
-    var perstage = conf.getDouble("spark.checkpointing.perstage", false) ;
+    var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
 
     if (!fixed_delta) {
       delta = sc.prev_delta
