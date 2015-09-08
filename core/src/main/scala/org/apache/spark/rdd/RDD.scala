@@ -1524,8 +1524,14 @@ abstract class RDD[T: ClassTag](
     if (ckdecision) {
       if(finegrainedon) {
       //Based on Policy etc
-        timetaken = checkpointData.get.CheckpointPartitionActual(partitionId)
-        sc.prev_delta = timetaken ; 
+        if (context.checkpointDir.isEmpty) {
+          throw new SparkException("Checkpoint directory has not been set in the SparkContext")
+        } else if (checkpointData.isEmpty) {
+          checkpointData = Some(new RDDCheckpointData(this))
+
+          timetaken = checkpointData.get.CheckpointPartitionActual(partitionId)
+          sc.prev_delta = timetaken ;
+        }
         //TODO: Add to metrics
         //stage.setckptmarked() //laterz        
       }
