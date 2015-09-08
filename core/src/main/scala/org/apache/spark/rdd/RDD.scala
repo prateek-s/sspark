@@ -1505,11 +1505,12 @@ abstract class RDD[T: ClassTag](
     //Move to RDD class initialization initialization
     if(!finegrainedOn)
       return
-
-    if (shouldCheckpointRDD(partitionId)) {
-    //Based on Policy etc
-      checkpointData.get.CheckpointPartitionActual(partitionId)      
-    }
+    this.synchronized{
+        if (shouldCheckpointRDD(partitionId)) {
+          //Based on Policy etc
+          checkpointData.get.CheckpointPartitionActual(partitionId)
+        }
+      }
   }
 
   /**
@@ -1519,10 +1520,12 @@ abstract class RDD[T: ClassTag](
     */
   def shouldCheckpointRDD(partitionId: Int):Boolean = {
     //get the policy from the configuration
-    //ALL, periodic, OPT. shuffle. 
+    //All, periodic, OPT. shuffle. 
     val policystring: String = conf.get("spark.checkpointing.policy", "None")
-    if(ckptFlag == 1) return true 
-    if(ckptFlag == -1) return false
+    if(ckptFlag == 1) //already marked
+      return true
+    if(ckptFlag == -1) //already marked
+      return false
     if(ckptFlag == 0) { //undecided, dispatch policy here.
       policystring match {
         case "None" => return policy_none(partitionId)
