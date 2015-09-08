@@ -1505,12 +1505,16 @@ abstract class RDD[T: ClassTag](
     //Move to RDD class initialization initialization
     if(!finegrainedOn)
       return
+
+    val ckdecision = false 
+
     this.synchronized{
-        if (shouldCheckpointRDD(partitionId)) {
-          //Based on Policy etc
-          checkpointData.get.CheckpointPartitionActual(partitionId)
-        }
-      }
+      ckdecision = shouldCheckpointRDD(partitionId)
+    }
+    if (ckdecision) {
+      //Based on Policy etc
+      checkpointData.get.CheckpointPartitionActual(partitionId)
+    }
   }
 
   /**
