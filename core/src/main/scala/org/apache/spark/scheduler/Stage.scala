@@ -47,7 +47,7 @@ import org.apache.spark.util.CallSite
  * be updated for each attempt.
  *
  */
-private[spark] class Stage(
+class Stage(
     val id: Int,
     val rdd: RDD[_],
     val numTasks: Int,
