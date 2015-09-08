@@ -79,7 +79,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
   * Need: Partition size, estmimated recompute cost.
   * 
   */
-  def CheckpointPartitionActual (partitionId: Int):Int {
+  def CheckpointPartitionActual (partitionId: Int):Int = {
     //Write the partition here. Partition ID is a Task parameter.
     // Create the output path for the checkpoint
     val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)

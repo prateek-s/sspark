@@ -1506,7 +1506,7 @@ abstract class RDD[T: ClassTag](
     //Move to RDD class initialization initialization
 
     var ckdecision = false ;
-    val timetaken ;
+    val timetaken = 0 ;
     this.synchronized {
       ckdecision = shouldCheckpointRDD(partitionId, stage)
     }
