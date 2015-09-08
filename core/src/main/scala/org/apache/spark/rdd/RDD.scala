@@ -1510,7 +1510,7 @@ abstract class RDD[T: ClassTag](
 
     var ckdecision = false 
 
-    this.synchronized{
+    this.synchronized {
       ckdecision = shouldCheckpointRDD(partitionId, stage)
     }
     if (ckdecision) {
@@ -1584,6 +1584,7 @@ abstract class RDD[T: ClassTag](
       //Each stage has its own timer essentially.
       //
       if((current_time - stage_ckpt_time) > target_tau*3600) {
+        stage.stagecktime = System.currentTimeMillis() 
         return true 
       }
       else 
@@ -1591,6 +1592,8 @@ abstract class RDD[T: ClassTag](
     }
     //Else, global time.
     if((current_time - prev_ckpt_time) > target_tau*3600) {
+      //reset the clock.
+      sc.prev_ckpt_time = System.currentTimeMillis() 
       return true
     }
 
