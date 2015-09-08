@@ -1528,7 +1528,7 @@ abstract class RDD[T: ClassTag](
           throw new SparkException("Checkpoint directory has not been set in the SparkContext")
         } else if (checkpointData.isEmpty) {
           checkpointData = Some(new RDDCheckpointData(this))
-
+          logInfo(">>>>>>>>>>>>>>>>>>> BEGIN CHECKPOINTING PARTITION!")
           timetaken = checkpointData.get.CheckpointPartitionActual(partitionId)
           sc.prev_delta = timetaken ;
         }
