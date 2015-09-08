@@ -78,6 +78,7 @@ class Stage(
   var latestInfo: StageInfo = StageInfo.fromStage(this)
 
   var ckptmarked = false 
+  var stagecktime:Long = System.currentTimeMillis()
 
   def isAvailable: Boolean = {
     if (!isShuffleMap) {
