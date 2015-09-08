@@ -1506,7 +1506,7 @@ abstract class RDD[T: ClassTag](
     //Move to RDD class initialization initialization
 
     var ckdecision = false ;
-    val timetaken = 0 ;
+    var timetaken = 0 ;
     this.synchronized {
       ckdecision = shouldCheckpointRDD(partitionId, stage)
     }
@@ -1613,7 +1613,7 @@ abstract class RDD[T: ClassTag](
   }
 
 /********************************************************************************/
-  val fullycheckpointed = false 
+  var fullycheckpointed = false 
   /**
    * Changes the dependencies of this RDD from its original parents to a new RDD (`newRDD`)
    * created from the checkpoint file, and forget its old dependencies and partitions.
