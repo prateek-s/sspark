@@ -77,6 +77,8 @@ class Stage(
   /** Pointer to the latest [StageInfo] object, set by DAGScheduler. */
   var latestInfo: StageInfo = StageInfo.fromStage(this)
 
+  var ckptmarked = false 
+
   def isAvailable: Boolean = {
     if (!isShuffleMap) {
       true
@@ -100,6 +102,14 @@ class Stage(
     if (prevList != Nil && newList == Nil) {
       numAvailableOutputs -= 1
     }
+  }
+
+  def setckptmarked() {
+    this.ckptmarked = true
+  }
+
+  def isckptmarked() {
+    this.ckptmarked
   }
 
   /**

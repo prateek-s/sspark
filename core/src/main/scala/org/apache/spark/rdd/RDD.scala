@@ -1516,6 +1516,7 @@ abstract class RDD[T: ClassTag](
     if (ckdecision) {
       //Based on Policy etc
       checkpointData.get.CheckpointPartitionActual(partitionId)
+      stage.setckptmarked() 
     }
   }
 
