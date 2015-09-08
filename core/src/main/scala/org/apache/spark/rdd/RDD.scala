@@ -1506,7 +1506,7 @@ abstract class RDD[T: ClassTag](
     if(!finegrainedOn)
       return
 
-    val ckdecision = false 
+    var ckdecision = false 
 
     this.synchronized{
       ckdecision = shouldCheckpointRDD(partitionId)
