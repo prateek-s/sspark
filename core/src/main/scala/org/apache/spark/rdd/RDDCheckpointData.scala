@@ -79,7 +79,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
   * Need: Partition size, estmimated recompute cost.
   * 
   */
-  def CheckpointPartitionActual (partitionId: Int) {
+  def CheckpointPartitionActual (partitionId: Int):Int {
     //Write the partition here. Partition ID is a Task parameter.
     // Create the output path for the checkpoint
     val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)
@@ -100,14 +100,10 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     //if all partitions done, then do the dependency pruning here?
     val end_time:Long =  System.currentTimeMillis()
 
-    //returns immediately? 
-    
-    //rdd.sc.prev_delta = end_time - start_time
-
     val pdone = rdd.addToSavedPartitions(partitionId)
-//    logInfo("Checkpointed Partition " + rdd.id + ":" +partitionId+ "@" + pdone + "/" + rdd.total_num_parts  +" to " +path)
+    logInfo("Checkpointed Partition " + rdd.id + ":" +partitionId+ "@" + pdone + "/" + " to " +path)
 
-    if(pdone == 3) { //rdd.total_num_parts) {
+    if(pdone == rdd.partitions.size) { 
       //logInfo("All partitions done for "+ rdd.id + "/"+rdd.total_num_parts)
 
       val newRDD = new CheckpointRDD[T](rdd.context, path.toString)
@@ -124,6 +120,8 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
       }
       logInfo("Finished checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
     }
+
+    return end_time - start_time
   }
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.

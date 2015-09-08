@@ -312,8 +312,8 @@ abstract class RDD[T: ClassTag](
   {
     /* TODO: Partition granularity? */
     logInfo("<<<< IN computeOrReadCheckpoint : %d".format(split.index)) ;
-    var partcheckopt = false
-    if(partcheckopt) {
+    var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
+    if(finegrainedon && !fullycheckpointed) {
       rescuePartition(split, context)
     }
     else {
@@ -1464,11 +1464,11 @@ abstract class RDD[T: ClassTag](
    */
   private[spark] def doCheckpoint() {
 
-    val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
-      //Move to RDD class initialization initialization
-    if(finegrainedOn) {
-      //mark for checkpointing?
-    }
+    // val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
+    //   //Move to RDD class initialization initialization
+    // if(finegrainedOn) {
+    //   //mark for checkpointing?
+    // }
 
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
@@ -1481,16 +1481,15 @@ abstract class RDD[T: ClassTag](
     }
   }
 
-
+  /* DONT UNCOMMENT THIS. */
   //val total_num_parts = partitions.size
 
   var saved_parts : Seq[Int] = Seq() 
 
   /** Return the total number of partitions added */
   def addToSavedPartitions(partitionId: Int): Int  = {
-    //saved_parts = saved_parts:+partitionId 
-    //return saved_parts.length
-    return 0
+    saved_parts = saved_parts:+partitionId 
+    return saved_parts.length    
   }
 
   /**
@@ -1505,18 +1504,23 @@ abstract class RDD[T: ClassTag](
 
     val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
     //Move to RDD class initialization initialization
-    if(!finegrainedOn)
-      return
 
-    var ckdecision = false 
-
+    var ckdecision = false ;
+    val timetaken ;
     this.synchronized {
       ckdecision = shouldCheckpointRDD(partitionId, stage)
     }
     if (ckdecision) {
+      if(finegrainedOn) {
       //Based on Policy etc
-      checkpointData.get.CheckpointPartitionActual(partitionId)
-      stage.setckptmarked() 
+        timetaken = checkpointData.get.CheckpointPartitionActual(partitionId)
+        sc.prev_delta = timetaken ; 
+        //TODO: Add to metrics
+        //stage.setckptmarked() //laterz        
+      }
+      else {
+        this.doCheckpoint() ;
+      }
     }
   }
 
@@ -1609,7 +1613,7 @@ abstract class RDD[T: ClassTag](
   }
 
 /********************************************************************************/
-
+  val fullycheckpointed = false 
   /**
    * Changes the dependencies of this RDD from its original parents to a new RDD (`newRDD`)
    * created from the checkpoint file, and forget its old dependencies and partitions.
@@ -1620,6 +1624,7 @@ abstract class RDD[T: ClassTag](
     clearDependencies()
     partitions_ = null
     deps = null    // Forget the constructor argument for dependencies too
+    fullycheckpointed = true 
   }
 
   /**
