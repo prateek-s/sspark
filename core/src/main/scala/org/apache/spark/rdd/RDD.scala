@@ -157,9 +157,7 @@ abstract class RDD[T: ClassTag](
   val policystring: String = conf.get("spark.checkpointing.policy", "None")
   var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
   /* Keep the timestamps in seconds */
-  var prev_ckpt_time:Long = sc.prev_ckpt_time/1000 ; //some systemwide global variable!
-  var stage_ckpt_time:Long  = stage.stagecktime/1000 ;
-  var current_time:Long = System.currentTimeMillis()/1000 ; //get system time somehow. Use spark's internal libs plz.
+
   var delta:Double = conf.getDouble("spark.checkpointing.delta", 0.01) //time to write the checkpoint. ~40s
   var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
   /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
@@ -1524,7 +1522,7 @@ abstract class RDD[T: ClassTag](
       ckdecision = shouldCheckpointRDD(partitionId, stage)
     }
     if (ckdecision) {
-      if(finegrainedOn) {
+      if(finegrainedon) {
       //Based on Policy etc
         timetaken = checkpointData.get.CheckpointPartitionActual(partitionId)
         sc.prev_delta = timetaken ; 
@@ -1575,7 +1573,9 @@ abstract class RDD[T: ClassTag](
   }
 
   def policy_opt(partitionId: Int, stage:Stage): Boolean = {
-
+  var stage_ckpt_time:Long  = stage.stagecktime/1000 ;
+  var current_time:Long = System.currentTimeMillis()/1000 ; //get system time somehow. Use spark's internal libs plz.
+  var prev_ckpt_time:Long = sc.prev_ckpt_time/1000 ; //some systemwide global variable!
 
     if (!fixed_delta) {
       delta = sc.prev_delta
