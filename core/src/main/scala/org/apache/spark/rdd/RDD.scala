@@ -1494,7 +1494,7 @@ abstract class RDD[T: ClassTag](
   /**
     * Called from DAG scheduler at the end of the task. 
     */
-  def doCheckpointPartition(partitionId: Int) {
+  def doCheckpointPartition(partitionId: Int, stage: stage) {
     //Check Bitmap. If falls within checkpointed region, exit.
     //checkpointData.get.CheckpointPartitionActual(id)
     //dependencies??
@@ -1507,7 +1507,7 @@ abstract class RDD[T: ClassTag](
       return
 
     var ckdecision = false 
-
+    
     this.synchronized{
       ckdecision = shouldCheckpointRDD(partitionId)
     }
