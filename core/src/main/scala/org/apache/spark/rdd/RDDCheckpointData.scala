@@ -120,8 +120,9 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
       }
       logInfo("Finished checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
     }
-
-    return ((end_time - start_time)/1000)
+    var td = (end_time - start_time)/1000
+    var ti = td.toInt 
+    return ti
   }
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.
