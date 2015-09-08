@@ -1511,7 +1511,7 @@ abstract class RDD[T: ClassTag](
     var ckdecision = false 
 
     this.synchronized{
-      ckdecision = shouldCheckpointRDD(partitionId)
+      ckdecision = shouldCheckpointRDD(partitionId, stage)
     }
     if (ckdecision) {
       //Based on Policy etc
@@ -1525,7 +1525,7 @@ abstract class RDD[T: ClassTag](
     * the first time this function is called and then return the
     * stored result the next time.
     */
-  def shouldCheckpointRDD(partitionId: Int):Boolean = {
+  def shouldCheckpointRDD(partitionId: Int, stage:Stage):Boolean = {
     //get the policy from the configuration
     //All, periodic, OPT. shuffle. 
     val policystring: String = conf.get("spark.checkpointing.policy", "None")
@@ -1538,7 +1538,7 @@ abstract class RDD[T: ClassTag](
         case "None" => return policy_none(partitionId)
         case "All" => return policy_all(partitionId)
         case "Graph" => return policy_graph(partitionId)
-        case "Opt" => return policy_opt(partitionId)
+        case "Opt" => return policy_opt(partitionId, stage)
       }
     }
     return false 
@@ -1557,7 +1557,7 @@ abstract class RDD[T: ClassTag](
     return false
   }
 
-  def policy_opt(partitionId: Int): Boolean = {
+  def policy_opt(partitionId: Int, stage:Stage): Boolean = {
 
     var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float? 
     /* Keep the timestamps in seconds */
