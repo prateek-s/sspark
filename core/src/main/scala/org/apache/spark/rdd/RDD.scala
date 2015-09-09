@@ -149,6 +149,23 @@ abstract class RDD[T: ClassTag](
     this
   }
 
+
+ /**********************************************************************/
+ /* 0=Undecided. 1=True, -1=False */
+ // var ckptFlag: Int = 0
+ // var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
+ // val policystring: String = conf.get("spark.checkpointing.policy", "None")
+ // var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
+ // /* Keep the timestamps in seconds */
+
+ // var delta:Double = conf.getDouble("spark.checkpointing.delta", 0.01) //time to write the checkpoint. ~40s
+ // var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
+ // /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
+ // var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
+ // var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
+
+ /**********************************************************************/
+
   /**
    * Set this RDD's storage level to persist its values across operations after the first time
    * it is computed. This can only be used to assign a new storage level if the RDD does not
