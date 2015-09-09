@@ -1462,7 +1462,7 @@ abstract class RDD[T: ClassTag](
       return
 
     //this.synchronized {
-    ckdecision = shouldCheckpointRDD(partitionId, stage)
+    ckdecision = shouldCheckpointRDD(partitionId)
     logInfo("????????????????/CKDECISION IS "+ ckdecision)
     //}
     if (ckdecision) {
@@ -1487,7 +1487,7 @@ abstract class RDD[T: ClassTag](
   }
 
 
-  def shouldCheckpointRDD(partitionId: Int, stage:Stage):Boolean = {
+  def shouldCheckpointRDD(partitionId: Int):Boolean = {
     //get the policy from the configuration
     //All, periodic, OPT. shuffle. 
 
