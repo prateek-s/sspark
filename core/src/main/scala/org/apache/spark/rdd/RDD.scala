@@ -1447,6 +1447,7 @@ abstract class RDD[T: ClassTag](
     }
   }
 
+
   val SavedPartitions = new ListBuffer[Int]
 
   def doCheckpointPartition(partitionId: Int) {
@@ -1460,6 +1461,8 @@ abstract class RDD[T: ClassTag](
     val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
     if(!finegrainedOn)
       return
+    else 
+      return 
 
     //this.synchronized {
 
