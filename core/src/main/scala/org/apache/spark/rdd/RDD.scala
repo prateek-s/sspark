@@ -1359,7 +1359,7 @@ abstract class RDD[T: ClassTag](
    */
   def checkpoint() {
     if(shouldCheckpointRDD(0)) {
-      logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+rdd.name)
+      logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
     
       if (context.checkpointDir.isEmpty) {
         throw new SparkException("Checkpoint directory has not been set in the SparkContext")
@@ -1369,7 +1369,7 @@ abstract class RDD[T: ClassTag](
       }
     }
     else {
-      logInfo("):):)))))) CHECKPOINT REQUEST DENIED: "+rdd.name)
+      logInfo("):):)))))) CHECKPOINT REQUEST DENIED: "+this.name)
     }
   }
 
