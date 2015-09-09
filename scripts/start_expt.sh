@@ -55,7 +55,11 @@ echo "--------------- Spark Config --------------------------"
 sparkconfig=""
 if [ "$CKPT" == "opt" ];
 then
-    $sparkconfig="--conf spark.checkpointing.policy=opt --conf spark.checkpointing.tau=0.2"
+    $sparkconfig="spark.checkpointing.policy    opt 
+spark.checkpointing.tau      0.2
+spark.checkpointing.dir     /root/ckpts"
+
+    echo $sparkconfig >> $SPARK_HOME/conf/spark-defaults.conf
 
 elif [ "$CKPT" == "none" ];
 then
@@ -68,7 +72,7 @@ if [ "$BENCHMARK" == "pagerank" ];
 then
     echo "$BENCHMARK !"
     params="s3n://prtk1/part-r-00000 --numEpart=10"
-    CMD="nohup time $SPARK_HOME/bin/run-example.sh graph.LiveJournalPageRank $params $sparkconf> $outputfile 2>&1 &"
+    CMD="nohup time $SPARK_HOME/bin/run-example.sh graph.LiveJournalPageRank $params > $outputfile 2>&1 &"
     echo $CMD
 
 elif [ "$BENCHMARK" == "als" ];
