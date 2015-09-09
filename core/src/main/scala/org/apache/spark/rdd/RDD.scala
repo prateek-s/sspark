@@ -1461,6 +1461,8 @@ abstract class RDD[T: ClassTag](
     if(!finegrainedOn)
       return
 
+    checkpointData.get.CheckpointPartitionActual(partitionId)
+    return 
     //this.synchronized {
     ckdecision = shouldCheckpointRDD(partitionId)
     logInfo("????????????????/CKDECISION IS "+ ckdecision)
