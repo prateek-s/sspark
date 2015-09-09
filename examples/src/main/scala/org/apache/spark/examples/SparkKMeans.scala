@@ -68,6 +68,7 @@ object SparkKMeans {
 
     val sparkConf = new SparkConf().setAppName("SparkKMeans")
     val sc = new SparkContext(sparkConf)
+    sc.setCheckpointDir("/home/prateeks/ckpts") 
     val lines = sc.textFile(args(0))
     val data = lines.map(parseVector _).cache()
     val K = args(1).toInt
