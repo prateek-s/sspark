@@ -153,8 +153,8 @@ abstract class RDD[T: ClassTag](
  /**********************************************************************/
  /* 0=Undecided. 1=True, -1=False */
   var ckptFlag: Int = 0
- // var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
- // val policystring: String = conf.get("spark.checkpointing.policy", "None")
+  var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
+  val policystring: String = conf.get("spark.checkpointing.policy", "None")
  // var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
  // /* Keep the timestamps in seconds */
 
@@ -1500,7 +1500,7 @@ abstract class RDD[T: ClassTag](
         case "None" => return policy_none(partitionId)
         case "All" => return policy_all(partitionId)
         case "Graph" => return policy_graph(partitionId)
-        case "Opt" => return policy_opt(partitionId, stage)
+        case "Opt" => return policy_opt(partitionId)
       }
     }
     return false 
@@ -1519,7 +1519,7 @@ abstract class RDD[T: ClassTag](
     return false
   }
 
-  def policy_opt(partitionId: Int, stage:Stage): Boolean = {
+  def policy_opt(partitionId: Int): Boolean = {
     return true
   }
 
