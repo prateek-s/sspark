@@ -154,7 +154,7 @@ abstract class RDD[T: ClassTag](
  /* 0=Undecided. 1=True, -1=False */
   var ckptFlag: Int = 0
   var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
-  val policystring: String = conf.get("spark.checkpointing.policy", "None")
+  var policystring: String = conf.get("spark.checkpointing.policy", "None")
  //  var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
  // /* Keep the timestamps in seconds */
 
@@ -1468,7 +1468,7 @@ var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
     if (ckdecision) {
       if(finegrainedon) {
 	//Based on Policy etc
-	if (true) { //checkpointData.isDefined) {
+	if (checkpointData.isDefined) {
           //actual checkpointing
           checkpointData.get.CheckpointPartitionActual(partitionId)
 	}
