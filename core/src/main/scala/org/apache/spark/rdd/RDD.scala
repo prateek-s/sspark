@@ -155,14 +155,14 @@ abstract class RDD[T: ClassTag](
   var ckptFlag: Int = 0
   var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
   val policystring: String = conf.get("spark.checkpointing.policy", "None")
-var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
- /* Keep the timestamps in seconds */
+ //  var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
+ // /* Keep the timestamps in seconds */
 
- var delta:Double = conf.getDouble("spark.checkpointing.delta", 0.01) //time to write the checkpoint. ~40s
- var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
- /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
- var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
- var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
+ // var delta:Double = conf.getDouble("spark.checkpointing.delta", 0.01) //time to write the checkpoint. ~40s
+ // var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
+ // /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
+ // var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
+ // var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
 
  /**********************************************************************/
 
