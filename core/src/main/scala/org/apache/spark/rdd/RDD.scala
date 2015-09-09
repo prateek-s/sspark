@@ -1537,6 +1537,7 @@ abstract class RDD[T: ClassTag](
         //stage.setckptmarked() //laterz        
       }
       else {
+        logInfo("Finegrained OFF ")
         this.doCheckpoint() ;
       }
     }

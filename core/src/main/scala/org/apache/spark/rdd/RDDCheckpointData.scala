@@ -130,6 +130,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     // If it is marked for checkpointing AND checkpointing is not already in progress,
     // then set it to be in progress, else return
     // doCheckpoint is called on *every* rdd, so check if it is marked for checkpointing
+    logInfo("INSIDE doCHECKPOINT real")
     RDDCheckpointData.synchronized {
       if (cpState == MarkedForCheckpoint) {
         cpState = CheckpointingInProgress
