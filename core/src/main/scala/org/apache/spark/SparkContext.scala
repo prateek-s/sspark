@@ -1476,10 +1476,6 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
     rdd.doCheckpoint()
   }
 
-  def shouldCheckpoint(rdd:RDD):Boolean = {
-    rdd.Checkpoint() 
-    return true
-  }
 
   /**
    * Run a function on a given set of partitions in an RDD and return the results as an array. The
