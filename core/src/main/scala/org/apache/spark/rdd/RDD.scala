@@ -1518,9 +1518,10 @@ abstract class RDD[T: ClassTag](
 
     var ckdecision = false ;
     var timetaken = 0 ;
-    this.synchronized {
-      ckdecision = shouldCheckpointRDD(partitionId, stage)
-    }
+    //this.synchronized {
+    ckdecision = shouldCheckpointRDD(partitionId, stage)
+    logInfo("????????????????/CKDECISION IS "+ ckdecision)
+    //}
     if (ckdecision) {
       if(finegrainedon) {
       //Based on Policy etc
