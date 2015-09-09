@@ -99,6 +99,10 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
 
   var prev_delta:Double = 0.01
 
+  var prev_ckpt_time:Long = System.currentTimeMillis() 
+
+  var prev_delta:Double = 0.01
+
   @volatile private var stopped: Boolean = false
 
   private def assertNotStopped(): Unit = {
@@ -1468,8 +1472,7 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
     if (conf.getBoolean("spark.logLineage", false)) {
       logInfo("RDD's recursive dependencies:\n" + rdd.toDebugString)
     }
-    
-    var ckptdecision = shouldCheckpoint(rdd) 
+   
     
     dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, allowLocal,
       resultHandler, localProperties.get)
@@ -1477,10 +1480,6 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
     rdd.doCheckpoint()
   }
 
-  def shouldCheckpoint(rdd:RDD):Boolean = {
-    rdd.Checkpoint() 
-    return true
-  }
 
   /**
    * Run a function on a given set of partitions in an RDD and return the results as an array. The
