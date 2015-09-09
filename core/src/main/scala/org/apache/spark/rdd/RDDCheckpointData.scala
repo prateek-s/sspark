@@ -110,6 +110,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
         return
       }
     }
+    logInfo("----------------------------- CKPT ACTUAL START") 
     // Create the output path for the checkpoint
     val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)
     val fs = path.getFileSystem(rdd.context.hadoopConfiguration)
