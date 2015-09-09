@@ -42,13 +42,12 @@ progdir="$BENCHMARK"_"$CKPT"_"$TOKILL"
 resultsdir=$resultshome/$progdir
 mkdir $resultsdir
 
-echo "-------------- Created Directories--------------"
+echo "-------------- Created Directories : $resultsdir"
 
-date >> $resultsdir/start
-echo "$origargs" >> $resultsdir/args
-cp start_expt.sh $resultsdir/start_expt.sh
+date >> "$resultsdir"/start
+echo "$origargs" >> "$resultsdir"/args
+cp start_expt.sh "$resultsdir"/start_expt.sh
 
-echo "$resultsdir"
 outputfile=$resultsdir/time
 
 echo "--------------- Spark Config --------------------------"
@@ -90,15 +89,19 @@ sleep $sleeptime
 #kill nodes 
 
 echo "------------- Wake up to kill nodes -------------"
+slavestokill=`cat $SPARK_HOME/conf/slaves | head -n $TOKILL`
 
-pssh -h `cat slaves | head -n $TOKILL` "$SPARK_HOME/scripts/kill-node.sh"
+pssh -H "$slavestokill" "$SPARK_HOME/scripts/kill-node.sh"
 
 #This kills spark worker AND hdfs
 
 if [ "$REPLENISH" == "full" ];
 then
     sleep 100
-    pssh -h `cat slaves | head -n $TOKILL` "$SPARK_HOME/sbin/start-this-slave.sh"
+    pssh -H "$slavestokill" "$SPARK_HOME/sbin/start-this-slave.sh"
 fi
 
 #
+
+
+
