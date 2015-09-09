@@ -79,7 +79,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
   * Need: Partition size, estmimated recompute cost.
   * 
   */
-  def CheckpointPartitionActual (partitionId: Int) :Int = {
+  def CheckpointPartitionActual (partitionId: Int)  {
     //Write the partition here. Partition ID is a Task parameter.
     // Create the output path for the checkpoint
     val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)
@@ -87,7 +87,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     if (!fs.mkdirs(path)) {
       throw new SparkException("Failed to create checkpoint path " + path)
     }
-
+    logInfo("ACtually saving partition!")
     // Save to file, and reload it as an RDD
     val broadcastedConf = rdd.context.broadcast(
       new SerializableWritable(rdd.context.hadoopConfiguration))
@@ -121,8 +121,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
       logInfo("Finished checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
     }
     var td = (end_time - start_time)/1000
-    var ti = td.toInt 
-    return ti
+    var ti = td.toInt     
   }
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.

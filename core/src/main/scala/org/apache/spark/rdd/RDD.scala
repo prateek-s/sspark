@@ -1530,8 +1530,8 @@ abstract class RDD[T: ClassTag](
         } else if (checkpointData.isEmpty) {
           checkpointData = Some(new RDDCheckpointData(this))
           logInfo(">>>>>>>>>>>>>>>>>>> BEGIN CHECKPOINTING PARTITION!")
-          timetaken = checkpointData.get.CheckpointPartitionActual(partitionId)
-          sc.prev_delta = timetaken ;
+          checkpointData.get.CheckpointPartitionActual(partitionId)
+          //sc.prev_delta = timetaken ;
         }
         //TODO: Add to metrics
         //stage.setckptmarked() //laterz        
