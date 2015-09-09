@@ -94,12 +94,13 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     /* runJob(rdd, iterator => something, result _, partition list, false) underscore=partially applied function*/
     val partitionToCkpt = List(partitionId)
     val start_time:Long = System.currentTimeMillis()
+    logInfo("Before running Job: "+partitionToCkpt.toString + " -> " + path)
     rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)
     //Who catches the failure here? What if the partition write fails?
     //Right place to add to the partitions already checkpointed list.
     //if all partitions done, then do the dependency pruning here?
     val end_time:Long =  System.currentTimeMillis()
-
+    logInfo("AFTER running Job: "+partitionToCkpt.toString + " -> " + path)
     val pdone = rdd.addToSavedPartitions(partitionId)
     logInfo("Checkpointed Partition " + rdd.id + ":" +partitionId+ "@" + pdone + "/" + " to " +path)
 
