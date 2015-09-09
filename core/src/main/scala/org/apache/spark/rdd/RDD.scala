@@ -1471,9 +1471,14 @@ abstract class RDD[T: ClassTag](
     if (ckdecision) {
       if(finegrainedon) {
 	//Based on Policy etc
-	if (true) {
+	if (checkpointData.isDefined) {
           //actual checkpointing
           checkpointData.get.CheckpointPartitionActual(partitionId)
+	}
+	else {
+	  logInfo("!!!CHECKPOINT DATA UNDEFINED> TRYING TO CREATE ONE!!!! ")
+	  checkpointData = Some(new RDDCheckpointData(this))
+	  checkpointData.get.CheckpointPartitionActual(partitionId)
 	}
       }	
     }
