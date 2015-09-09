@@ -152,7 +152,7 @@ abstract class RDD[T: ClassTag](
 
  /**********************************************************************/
  /* 0=Undecided. 1=True, -1=False */
- // var ckptFlag: Int = 0
+  var ckptFlag: Int = 0
  // var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
  // val policystring: String = conf.get("spark.checkpointing.policy", "None")
  // var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
@@ -1456,12 +1456,71 @@ abstract class RDD[T: ClassTag](
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
     logInfo("CONF IS: %s".format(conf.toString()))
+    var ckdecision = false 
     val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
     if(!finegrainedOn)
       return
 
-    checkpointData.get.CheckpointPartitionActual(partitionId)
+    //this.synchronized {
+    ckdecision = shouldCheckpointRDD(partitionId, stage)
+    logInfo("????????????????/CKDECISION IS "+ ckdecision)
+    //}
+    if (ckdecision) {
+      if(finegrainedon) {
+      //Based on Policy etc
+        checkpointData.get.CheckpointPartitionActual(partitionId)
+        //sc.prev_delta = timetaken ;
+      }
+        //TODO: Add to metrics
+        //stage.setckptmarked() //laterz        
+	
+      else {
+        logInfo("Finegrained OFF ")
+        this.doCheckpoint() ;
+      }
+    }
+
+
+
+    //    checkpointData.get.CheckpointPartitionActual(partitionId)
     doneCheckpointing(partitionId)
+  }
+
+
+  def shouldCheckpointRDD(partitionId: Int, stage:Stage):Boolean = {
+    //get the policy from the configuration
+    //All, periodic, OPT. shuffle. 
+
+    if(ckptFlag == 1) //already marked
+      return true
+    if(ckptFlag == -1) //already marked
+      return false
+    if(ckptFlag == 0) { //undecided, dispatch policy here.
+      policystring match {
+        case "None" => return policy_none(partitionId)
+        case "All" => return policy_all(partitionId)
+        case "Graph" => return policy_graph(partitionId)
+        case "Opt" => return policy_opt(partitionId, stage)
+      }
+    }
+    return false 
+  }
+
+  def policy_none(partitionId: Int): Boolean ={
+    return false
+  }
+
+  def policy_all(partitionId: Int): Boolean = {
+    return true
+  }
+
+  def policy_graph(partitionId: Int): Boolean = {
+    //If this is output of a shuffle
+    return false
+  }
+
+  def policy_opt(partitionId: Int, stage:Stage): Boolean = {
+    return true
   }
 
 
