@@ -1531,28 +1531,28 @@ abstract class RDD[T: ClassTag](
     return 1
 
     //this.synchronized {
-    ckdecision = shouldCheckpointRDD(partitionId, stage)
-    logInfo("????????????????/CKDECISION IS "+ ckdecision)
-    //}
-    if (ckdecision) {
-      if(finegrainedon) {
-      //Based on Policy etc
-        if (context.checkpointDir.isEmpty) {
-          throw new SparkException("Checkpoint directory has not been set in the SparkContext")
-        } else if (checkpointData.isEmpty) {
-          checkpointData = Some(new RDDCheckpointData(this))
-          logInfo(">>>>>>>>>>>>>>>>>>> BEGIN CHECKPOINTING PARTITION!")
-          checkpointData.get.CheckpointPartitionActual(partitionId)
-          //sc.prev_delta = timetaken ;
-        }
-        //TODO: Add to metrics
-        //stage.setckptmarked() //laterz        
-      }
-      else {
-        logInfo("Finegrained OFF ")
-        this.doCheckpoint() ;
-      }
-    }
+    // ckdecision = shouldCheckpointRDD(partitionId, stage)
+    // logInfo("????????????????/CKDECISION IS "+ ckdecision)
+    // //}
+    // if (ckdecision) {
+    //   if(finegrainedon) {
+    //   //Based on Policy etc
+    //     if (context.checkpointDir.isEmpty) {
+    //       throw new SparkException("Checkpoint directory has not been set in the SparkContext")
+    //     } else if (checkpointData.isEmpty) {
+    //       checkpointData = Some(new RDDCheckpointData(this))
+    //       logInfo(">>>>>>>>>>>>>>>>>>> BEGIN CHECKPOINTING PARTITION!")
+    //       checkpointData.get.CheckpointPartitionActual(partitionId)
+    //       //sc.prev_delta = timetaken ;
+    //     }
+    //     //TODO: Add to metrics
+    //     //stage.setckptmarked() //laterz        
+    //   }
+    //   else {
+    //     logInfo("Finegrained OFF ")
+    //     this.doCheckpoint() ;
+    //   }
+    // }
   }
 
   /**
