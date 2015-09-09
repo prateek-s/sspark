@@ -91,6 +91,7 @@ private[spark] object CheckpointRDD extends Logging {
       broadcastedConf: Broadcast[SerializableWritable[Configuration]],
       blockSize: Int = -1
     )(ctx: TaskContext, iterator: Iterator[T]) {
+    logInfo("WriteToFile Start") 
     val env = SparkEnv.get
     val outputDir = new Path(path)
     val fs = outputDir.getFileSystem(broadcastedConf.value.value)
@@ -114,7 +115,9 @@ private[spark] object CheckpointRDD extends Logging {
     }
     val serializer = env.serializer.newInstance()
     val serializeStream = serializer.serializeStream(fileOutputStream)
+    logInfo("Before serializestream write all")
     serializeStream.writeAll(iterator)
+    logInfo("AFter serializestream write all")
     serializeStream.close()
 
     if (!fs.rename(tempOutputPath, finalOutputPath)) {

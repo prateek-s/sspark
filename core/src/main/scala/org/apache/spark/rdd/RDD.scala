@@ -150,6 +150,7 @@ abstract class RDD[T: ClassTag](
     name = _name
     this
   }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
   /* 0=Undecided. 1=True, -1=False */
@@ -172,6 +173,23 @@ abstract class RDD[T: ClassTag](
 
  /**********************************************************************/
 >>>>>>> 46bcb1eab5c0bc4af466fde48d2ee5e4297e7925
+=======
+  /**********************************************************************/
+  /* 0=Undecided. 1=True, -1=False */
+  // var ckptFlag: Int = 0 
+  // var finegrainedon = conf.getBoolean("spark.checkpointing.finegrained", false)
+  // val policystring: String = conf.get("spark.checkpointing.policy", "None")
+  // var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float?
+  // /* Keep the timestamps in seconds */
+
+  // var delta:Double = conf.getDouble("spark.checkpointing.delta", 0.01) //time to write the checkpoint. ~40s
+  // var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
+  // /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
+  // var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
+  // var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
+
+  /**********************************************************************/
+>>>>>>> 4d9e01956c6f648c6c073fafd6b0913b8a9c5580
 
   /**
    * Set this RDD's storage level to persist its values across operations after the first time
@@ -331,8 +349,8 @@ abstract class RDD[T: ClassTag](
   {
     /* TODO: Partition granularity? */
     logInfo("<<<< IN computeOrReadCheckpoint : %d".format(split.index)) ;
-    var partcheckopt = false
-    if(partcheckopt) {
+
+    if(false ) { //finegrainedon && !fullycheckpointed) {
       rescuePartition(split, context)
     }
     else {
@@ -1483,11 +1501,11 @@ abstract class RDD[T: ClassTag](
    */
   private[spark] def doCheckpoint() {
 
-    val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
-      //Move to RDD class initialization initialization
-    if(finegrainedOn) {
-      //mark for checkpointing?
-    }
+    // val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
+    //   //Move to RDD class initialization initialization
+    // if(finegrainedOn) {
+    //   //mark for checkpointing?
+    // }
 
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
@@ -1501,26 +1519,30 @@ abstract class RDD[T: ClassTag](
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
   val SavedPartitions = new ListBuffer[Int]
 >>>>>>> 46bcb1eab5c0bc4af466fde48d2ee5e4297e7925
 
+=======
+  /* DONT UNCOMMENT THIS. */
+>>>>>>> 4d9e01956c6f648c6c073fafd6b0913b8a9c5580
   //val total_num_parts = partitions.size
 
-  var saved_parts : Seq[Int] = Seq() 
+//  var saved_parts : Seq[Int] = Seq() 
 
   /** Return the total number of partitions added */
   def addToSavedPartitions(partitionId: Int): Int  = {
-    //saved_parts = saved_parts:+partitionId 
-    //return saved_parts.length
-    return 0
+//    saved_parts = saved_parts:+partitionId 
+//    return saved_parts.length    
+    return 1
   }
 
   /**
     * Called from DAG scheduler at the end of the task. 
     */
-  def doCheckpointPartition(partitionId: Int, stage: Stage) {
+  def doCheckpointPartition(partitionId: Int) {
     //Check Bitmap. If falls within checkpointed region, exit.
     //checkpointData.get.CheckpointPartitionActual(id)
     //dependencies??
@@ -1528,6 +1550,7 @@ abstract class RDD[T: ClassTag](
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 =======
     logInfo("CONF IS: %s".format(conf.toString()))
     var ckdecision = false 
@@ -1537,17 +1560,46 @@ abstract class RDD[T: ClassTag](
     if(!finegrainedOn)
       return
 <<<<<<< HEAD
+=======
+    //Move to RDD class initialization initialization
+>>>>>>> 4d9e01956c6f648c6c073fafd6b0913b8a9c5580
 
-    var ckdecision = false 
+    var ckdecision = false ;
+    var timetaken = 0 ;
 
-    this.synchronized {
-      ckdecision = shouldCheckpointRDD(partitionId, stage)
-    }
-    if (ckdecision) {
-      //Based on Policy etc
+    if (context.checkpointDir.isEmpty) {
+      throw new SparkException("Checkpoint directory has not been set in the SparkContext")
+    } else if (checkpointData.isEmpty) {
+      checkpointData = Some(new RDDCheckpointData(this))
+      logInfo(">>>>>>>>>>>>>>>>>>> BEGIN CHECKPOINTING PARTITION!")
       checkpointData.get.CheckpointPartitionActual(partitionId)
-      stage.setckptmarked() 
+      //sc.prev_delta = timetaken ;
     }
+    return 1
+
+    //this.synchronized {
+    // ckdecision = shouldCheckpointRDD(partitionId, stage)
+    // logInfo("????????????????/CKDECISION IS "+ ckdecision)
+    // //}
+    // if (ckdecision) {
+    //   if(finegrainedon) {
+    //   //Based on Policy etc
+    //     if (context.checkpointDir.isEmpty) {
+    //       throw new SparkException("Checkpoint directory has not been set in the SparkContext")
+    //     } else if (checkpointData.isEmpty) {
+    //       checkpointData = Some(new RDDCheckpointData(this))
+    //       logInfo(">>>>>>>>>>>>>>>>>>> BEGIN CHECKPOINTING PARTITION!")
+    //       checkpointData.get.CheckpointPartitionActual(partitionId)
+    //       //sc.prev_delta = timetaken ;
+    //     }
+    //     //TODO: Add to metrics
+    //     //stage.setckptmarked() //laterz        
+    //   }
+    //   else {
+    //     logInfo("Finegrained OFF ")
+    //     this.doCheckpoint() ;
+    //   }
+    // }
   }
 
   /**
@@ -1555,6 +1607,7 @@ abstract class RDD[T: ClassTag](
     * the first time this function is called and then return the
     * stored result the next time.
     */
+<<<<<<< HEAD
   def shouldCheckpointRDD(partitionId: Int, stage:Stage):Boolean = {
     //get the policy from the configuration
     //All, periodic, OPT. shuffle. 
@@ -1614,20 +1667,36 @@ abstract class RDD[T: ClassTag](
     //If this is output of a shuffle
     return false
   }
+=======
+  // def shouldCheckpointRDD(partitionId: Int, stage:Stage):Boolean = {
+  //   //get the policy from the configuration
+  //   //All, periodic, OPT. shuffle. 
 
-  def policy_opt(partitionId: Int, stage:Stage): Boolean = {
+  //   if(ckptFlag == 1) //already marked
+  //     return true
+  //   if(ckptFlag == -1) //already marked
+  //     return false
+  //   if(ckptFlag == 0) { //undecided, dispatch policy here.
+  //     policystring match {
+  //       case "None" => return policy_none(partitionId)
+  //       case "All" => return policy_all(partitionId)
+  //       case "Graph" => return policy_graph(partitionId)
+  //       case "Opt" => return policy_opt(partitionId, stage)
+  //     }
+  //   }
+  //   return false 
+  // }
+>>>>>>> 4d9e01956c6f648c6c073fafd6b0913b8a9c5580
 
-    var MTTF:Double = conf.getDouble("spark.checkpointing.MTTF", 10) //in hours float? 
-    /* Keep the timestamps in seconds */
-    var prev_ckpt_time:Long = sc.prev_ckpt_time/1000 ; //some systemwide global variable!
-    var stage_ckpt_time:Long  = stage.stagecktime/1000 ;
-    var current_time:Long = System.currentTimeMillis()/1000 ; //get system time somehow. Use spark's internal libs plz.
-    var delta:Double = conf.getDouble("spark.checkpointing.delta", 0.01) //time to write the checkpoint. ~40s
-    var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
-    /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
-    var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
-    var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
+  // def policy_none(partitionId: Int): Boolean ={
+  //   return false
+  // }
 
+  // def policy_all(partitionId: Int): Boolean = {
+  //   return true
+  // }
+
+<<<<<<< HEAD
 <<<<<<< HEAD
     if (!fixed_delta) {
       delta = sc.prev_delta
@@ -1655,9 +1724,47 @@ abstract class RDD[T: ClassTag](
       sc.prev_ckpt_time = System.currentTimeMillis() 
       return true
     }
+=======
+  // def policy_graph(partitionId: Int): Boolean = {
+  //   //If this is output of a shuffle
+  //   return false
+  // }
+>>>>>>> 4d9e01956c6f648c6c073fafd6b0913b8a9c5580
 
-    return false
-  }
+  // def policy_opt(partitionId: Int, stage:Stage): Boolean = {
+  // var stage_ckpt_time:Long  = stage.stagecktime/1000 ;
+  // var current_time:Long = System.currentTimeMillis()/1000 ; //get system time somehow. Use spark's internal libs plz.
+  // var prev_ckpt_time:Long = sc.prev_ckpt_time/1000 ; //some systemwide global variable!
+
+  //   if (!fixed_delta) {
+  //     delta = sc.prev_delta
+  //   }
+  //   if(target_tau == 0) {
+  //     //convert the target time and then the millis to hours thing. 
+  //     target_tau = math.sqrt(2*delta*MTTF)
+  //     //defaults: sqrt(2*0.01*10) = 0.45 hrs = 26 minutes
+  //     //MTTF 1 hr => 8 minutes
+  //   }
+  //   if(perstage) {
+  //     //per-stage accounting to increase the number of RDDs that we checkpoint.
+  //     //Each stage has its own timer essentially.
+  //     //
+  //     if((current_time - stage_ckpt_time) > target_tau*3600) {
+  //       stage.stagecktime = System.currentTimeMillis() 
+  //       return true 
+  //     }
+  //     else 
+  //       return false
+  //   }
+  //   //Else, global time.
+  //   if((current_time - prev_ckpt_time) > target_tau*3600) {
+  //     //reset the clock.
+  //     sc.prev_ckpt_time = System.currentTimeMillis() 
+  //     return true
+  //   }
+
+  //   return false
+  // }
 
   /** 
     * called after data has been saved. Update status.
@@ -1738,7 +1845,7 @@ abstract class RDD[T: ClassTag](
   }
 
 /********************************************************************************/
-
+  
   /**
    * Changes the dependencies of this RDD from its original parents to a new RDD (`newRDD`)
    * created from the checkpoint file, and forget its old dependencies and partitions.
@@ -1749,6 +1856,7 @@ abstract class RDD[T: ClassTag](
     clearDependencies()
     partitions_ = null
     deps = null    // Forget the constructor argument for dependencies too
+
   }
 
   /**
