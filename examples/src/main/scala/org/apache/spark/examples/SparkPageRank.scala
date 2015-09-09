@@ -61,9 +61,9 @@ object SparkPageRank {
       val parts = s.split("\\s+")
       (parts(0), parts(1))
     }.distinct().groupByKey()
-    links.checkpoint()
+    
     var ranks = links.mapValues(v => 1.0)
-    ranks.checkpoint()
+    
 
     for (i <- 1 to iters) {
       val contribs = links.join(ranks).values.flatMap{ case (urls, rank) =>
