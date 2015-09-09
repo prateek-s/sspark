@@ -161,7 +161,7 @@ abstract class RDD[T: ClassTag](
  // var delta:Double = conf.getDouble("spark.checkpointing.delta", 0.01) //time to write the checkpoint. ~40s
  // var fixed_delta:Boolean = conf.getBoolean("spark.checkpointing.FixedDelta", false)
  // /* Sometimes it is useful to specify the tau directly, which overrides the calculations */
-var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
+//var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
  // var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
 
  /**********************************************************************/
@@ -1468,7 +1468,7 @@ var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
     if (ckdecision) {
       if(finegrainedon) {
 	//Based on Policy etc
-	if (checkpointData.isDefined) {
+	if (true) {
           //actual checkpointing
           checkpointData.get.CheckpointPartitionActual(partitionId)
 	}
