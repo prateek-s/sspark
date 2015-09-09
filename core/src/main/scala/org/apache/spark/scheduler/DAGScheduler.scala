@@ -889,7 +889,7 @@ Number of partitions already decided?
       logDebug("New pending tasks: " + stage.pendingTasks)
 
 
-      //XXX rdd.Checkpoint() here.
+      rdd.Checkpoint()
 
       taskScheduler.submitTasks(
         new TaskSet(tasks.toArray, stage.id, stage.newAttemptId(), stage.jobId, properties))
