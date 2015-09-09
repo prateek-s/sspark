@@ -1358,11 +1358,13 @@ abstract class RDD[T: ClassTag](
    * memory, otherwise saving it on a file will require recomputation.
    */
   def checkpoint() {
+    var ckdir = conf.get("spark.checkpointing.dir", "/tmp")
     if(shouldCheckpointRDD(0)) {
       logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
     
       if (context.checkpointDir.isEmpty) {
-        throw new SparkException("Checkpoint directory has not been set in the SparkContext")
+        context.setCheckpointDir(ckdir)
+        //throw new SparkException("Checkpoint directory has not been set in the SparkContext")
       } else if (checkpointData.isEmpty) {
         checkpointData = Some(new RDDCheckpointData(this))
         checkpointData.get.markForCheckpoint()
