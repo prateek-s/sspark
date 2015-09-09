@@ -1468,7 +1468,10 @@ abstract class RDD[T: ClassTag](
     if (ckdecision) {
       if(finegrainedon) {
       //Based on Policy etc
+      if (checkpointData.isDefined) {
+        //actual checkpointing
         checkpointData.get.CheckpointPartitionActual(partitionId)
+      }
         //sc.prev_delta = timetaken ;
       }
         //TODO: Add to metrics
