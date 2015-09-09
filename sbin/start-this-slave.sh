@@ -34,5 +34,3 @@ cd /root/persistent-hdfs/bin
 ./hadoop-daemon.sh start tasktracker
 
 
-
-

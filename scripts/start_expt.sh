@@ -93,10 +93,12 @@ echo "------------- Wake up to kill nodes -------------"
 
 pssh -h `cat slaves | head -n $TOKILL` "$SPARK_HOME/scripts/kill-node.sh"
 
+#This kills spark worker AND hdfs
+
 if [ "$REPLENISH" == "full" ];
 then
     sleep 100
-    pssh -h `cat slaves | head -n $TOKILL` "$SPARK_HOME/bin/start-spark.sh"
+    pssh -h `cat slaves | head -n $TOKILL` "$SPARK_HOME/sbin/start-this-slave.sh"
 fi
 
 #
