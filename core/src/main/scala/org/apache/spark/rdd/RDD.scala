@@ -1468,7 +1468,7 @@ abstract class RDD[T: ClassTag](
     if (ckdecision) {
       if(finegrainedon) {
 	//Based on Policy etc
-	if (true)  //checkpointData.isDefined) {
+	if (true) { //checkpointData.isDefined) {
           //actual checkpointing
           checkpointData.get.CheckpointPartitionActual(partitionId)
 	}
