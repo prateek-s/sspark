@@ -1462,11 +1462,12 @@ abstract class RDD[T: ClassTag](
       return
 
     //this.synchronized {
-    ckdecision = true
+
     
     ckdecision = shouldCheckpointRDD(partitionId)
     logInfo("????????????????/CKDECISION IS "+ ckdecision)
     //}
+    ckdecision = true
     if (ckdecision) {
       if(finegrainedon) {
 	//Based on Policy etc
