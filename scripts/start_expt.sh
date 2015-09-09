@@ -103,5 +103,18 @@ fi
 
 #
 
+echo ">>>>>>>>>> NOW WAIT FOR EXPERIMENT TO FINISH >>>>>>>>>>>>>> "
 
+
+while true 
+do
+    sleep 10
+    wget -q http://localhost:8080/json -o json
+    appstate=`cat json | jq '.activeapps|.[0].state'`
+    if [ "$appstate" != "\"RUNNING\"" ];
+    then
+	echo "EXPT DONE!!!!"
+	exit 
+    fi    
+done
 
