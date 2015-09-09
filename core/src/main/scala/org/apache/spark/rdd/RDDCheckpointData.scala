@@ -112,13 +112,15 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
           "Checkpoint RDD " + newRDD + "(" + newRDD.partitions.size + ") has different " +
             "number of partitions than original RDD " + rdd + "(" + rdd.partitions.size + ")")
       }
-      RDDCheckpointData.synchronized {
+      else {
+        RDDCheckpointData.synchronized {
         cpFile = Some(path.toString)
         cpRDD = Some(newRDD)
         rdd.markCheckpointed(newRDD)   // Update the RDD's dependencies and partitions
         cpState = Checkpointed
       }
       logInfo("Finished checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
+      }
     }
     var td = (end_time - start_time)/1000
     var ti = td.toInt     
