@@ -1496,12 +1496,13 @@ abstract class RDD[T: ClassTag](
   /* DONT UNCOMMENT THIS. */
   //val total_num_parts = partitions.size
 
-  var saved_parts : Seq[Int] = Seq() 
+//  var saved_parts : Seq[Int] = Seq() 
 
   /** Return the total number of partitions added */
   def addToSavedPartitions(partitionId: Int): Int  = {
-    saved_parts = saved_parts:+partitionId 
-    return saved_parts.length    
+//    saved_parts = saved_parts:+partitionId 
+//    return saved_parts.length    
+    return 1
   }
 
   /**
