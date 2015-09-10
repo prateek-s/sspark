@@ -38,7 +38,7 @@ done
 
 resultshome="/root/results"
 mkdir $resultshome
-progdir="$BENCHMARK"_"$CKPT"_"$TOKILL_$REPLENISH"
+progdir="$BENCHMARK"_"$CKPT"_"$TOKILL"_"$REPLENISH"
 resultsdir=$resultshome/$progdir
 mkdir $resultsdir
 
