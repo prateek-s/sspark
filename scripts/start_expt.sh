@@ -76,24 +76,26 @@ if [ "$BENCHMARK" == "pagerank" ];
 then
     echo "$BENCHMARK !"
     programname="graphX.LiveJournalPageRank"
-    params="s3n://prtk1/part-r-0000[1-7] --numEpart=10"
+    params="s3n://prtk1/sparkdata/part-r-0000[1-7] --numEpart=20"
 
 elif [ "$BENCHMARK" == "als" ];
 then
     echo "$BENCHMARK !"
-    programname="mllib.denseKmeans"
-    params="s3n://lassALS/movielens[6-7][0-9].txt"
+    programname="mllib.MovieLensALS"
+    params="s3n://lassALS/movielens00[6-7][0-9].txt --rank 5"
 
 elif [ "$BENCHMARK" == "kmeans" ];
 then
     echo "$BENCHMARK !"
-    programname="graphX.LiveJournalPageRank"
-    params="s3n://lassKmeans/kmeansdata[1-3][0-9].txt --numEpart=10"
+    programname="mllib.DenseKMeans"
+    params="s3n://lassKmeans/kmeansdata[1-3][0-9].txt -k 100"
 
 fi
+echo "run-example $programname $params"
 
-nohup time $SPARK_HOME/bin/run-example.sh $programname $params > $outputfile 2>&1 &
+nohup time $SPARK_HOME/bin/run-example $programname $params > $outputfile 2>&1 &
 
+echo "job should be running. Now sleeping...?"
 
 ### Expt has started. 
 sleeptime=1200 #20 minutes default
