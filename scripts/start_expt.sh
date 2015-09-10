@@ -127,7 +127,8 @@ do
     sleep 10
     wget -q http://localhost:8080/json -o json
     appstate=`cat json | jq '.activeapps|.[0].state'`
-    if [ "$appstate" != "\"RUNNING\"" ];
+    numrunning=`cat json | jq '.activeapps|length'`
+    if [ "$appstate" != "\"RUNNING\"" && "$numrunning" == 0 ];
     then
 	echo "EXPT DONE!!!!"
 	exit 
