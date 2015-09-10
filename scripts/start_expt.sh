@@ -36,9 +36,9 @@ shift # past argument or value
 done
 
 
-resultshome="results"
+resultshome="/root/results"
 mkdir $resultshome
-progdir="$BENCHMARK"_"$CKPT"_"$TOKILL"
+progdir="$BENCHMARK"_"$CKPT"_"$TOKILL_$REPLENISH"
 resultsdir=$resultshome/$progdir
 mkdir $resultsdir
 
@@ -125,10 +125,12 @@ echo ">>>>>>>>>> NOW WAIT FOR EXPERIMENT TO FINISH >>>>>>>>>>>>>> "
 while true 
 do
     sleep 10
-    wget -q http://localhost:8080/json -o json
-    appstate=`cat json | jq '.activeapps|.[0].state'`
-    numrunning=`cat json | jq '.activeapps|length'`
-    if [ "$appstate" != "\"RUNNING\"" && "$numrunning" == 0 ];
+#    wget -q http://localhost:8080/json -o json
+#    appstate=`cat json | jq '.activeapps|.[0].state'`
+#    numrunning=`cat json | jq '.activeapps|length'`
+#    if [ "$appstate" != "\"RUNNING\"" && "$numrunning" == 0 ];
+    sparkrunning=`jps | grep -c SparkSubmit`
+    if [ "$sparkrunning" == 0 ]; 
     then
 	echo "EXPT DONE!!!!"
 	exit 
