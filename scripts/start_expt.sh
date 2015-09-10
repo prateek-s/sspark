@@ -114,7 +114,7 @@ pssh -H "$slavestokill" "$SPARK_HOME/scripts/kill-node.sh"
 if [ "$REPLENISH" == "full" ];
 then
     sleep 100
-    pssh -H "$slavestokill" "$SPARK_HOME/sbin/start-this-slave.sh"
+    $SPARK_HOME/sbin/start-all.sh
 fi
 
 #
