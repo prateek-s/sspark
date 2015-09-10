@@ -46,6 +46,7 @@ echo "-------------- Created Directories : $resultsdir"
 
 date >> "$resultsdir"/start
 echo "$origargs" >> "$resultsdir"/args
+echo "$origargs" >> /root/latest
 cp start_expt.sh "$resultsdir"/start_expt.sh
 
 outputfile=$resultsdir/time
@@ -60,10 +61,13 @@ spark.checkpointing.tau      0.2
 spark.checkpointing.dir     /root/ckpts"
 
     echo $sparkconfig >> $SPARK_HOME/conf/spark-defaults.conf
+    echo "RSYNC REQUIRED. NOT SUPPORTED YET, exiting"
+    exit
 
 elif [ "$CKPT" == "none" ];
 then
     $sparkconfig=""
+    echo "Default conf is good conf, nothing to do"
 fi
 
 echo "-------------------- Spark --------------------------"
@@ -71,18 +75,24 @@ echo "-------------------- Spark --------------------------"
 if [ "$BENCHMARK" == "pagerank" ];
 then
     echo "$BENCHMARK !"
-    params="s3n://prtk1/part-r-00000 --numEpart=10"
-    CMD="nohup time $SPARK_HOME/bin/run-example.sh graph.LiveJournalPageRank $params > $outputfile 2>&1 &"
-    echo $CMD
+    programname="graphX.LiveJournalPageRank"
+    params="s3n://prtk1/part-r-0000[1-7] --numEpart=10"
 
 elif [ "$BENCHMARK" == "als" ];
 then
-    echo "als!"
+    echo "$BENCHMARK !"
+    programname="mllib.denseKmeans"
+    params="s3n://lassALS/movielens[6-7][0-9].txt"
 
 elif [ "$BENCHMARK" == "kmeans" ];
 then
-    echo "als!"
+    echo "$BENCHMARK !"
+    programname="graphX.LiveJournalPageRank"
+    params="s3n://lassKmeans/kmeansdata[1-3][0-9].txt --numEpart=10"
+
 fi
+
+nohup time $SPARK_HOME/bin/run-example.sh $programname $params > $outputfile 2>&1 &
 
 
 ### Expt has started. 
