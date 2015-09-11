@@ -97,7 +97,7 @@ elif [ "$BENCHMARK" == "kmeans" ];
 then
     echo "$BENCHMARK !"
     programname="mllib.DenseKMeans"
-    params="s3n://lassKmeans/kmeansdata[1-3][0-9].txt -k 100"
+    params="s3n://lassKmeans/kmp_[1-20].txt -k 200 --numIterations 100"
 
 fi
 echo "run-example $programname $params"
