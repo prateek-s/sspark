@@ -31,7 +31,8 @@ object HdfsTest {
     val sparkConf = new SparkConf().setAppName("HdfsTest")
     val sc = new SparkContext(sparkConf)
     val file = sc.textFile(args(0))
-    val mapped = file.map(s => s.length).cache()
+    val mapped = file.map(s => s.length)
+    mapped.checkpoint()
     for (iter <- 1 to 10) {
       val start = System.currentTimeMillis()
       for (x <- mapped) { x + 2 }

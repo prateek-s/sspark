@@ -55,6 +55,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
 
   // Mark the RDD for checkpointing
   def markForCheckpoint() {
+    logInfo("MMMMMMMMMMMMMarking this RDD for checkpointing") 
     RDDCheckpointData.synchronized {
       if (cpState == Initialized) cpState = MarkedForCheckpoint
     }
