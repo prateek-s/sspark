@@ -66,24 +66,18 @@ echo "--------------- Spark Config --------------------------"
 
 if [ "$CKPT" == "opt" ];
 then
-    sparkconfig="spark.checkpointing.policy    Opt 
-
-spark.checkpointing.tau      0.2
-
-spark.checkpointing.dir     ckpts"
-
-    echo "spark.checkpointing.policy    Opt " >> $SPARK_HOME/conf/spark-defaults.conf
-    echo "spark.checkpointing.tau       0.1 " >> $SPARK_HOME/conf/spark-defaults.conf
-    echo "spark.checkpointing.dir    ckpts " >> $SPARK_HOME/conf/spark-defaults.conf
-    echo "spark.checkpointing.finegrained   false " >> $SPARK_HOME/conf/spark-defaults.conf
-
-    echo "COPYING NEW CONF DIR"
-    /root/spark-ec2/copy-dir $SPARK_HOME/conf/    
-
+    sed -i 's/spark.checkpointing.policy.*/spark.checkpointing.policy Opt/g' $SPARK_HOME/conf/spark-defaults.conf
+elif [ "$CKPT" == "all" ];
+then
+    sed -i 's/spark.checkpointing.policy.*/spark.checkpointing.policy All/g' $SPARK_HOME/conf/spark-defaults.conf
 elif [ "$CKPT" == "none" ];
 then    
-    echo "Default conf is good conf, nothing to do"
+    sed -i 's/spark.checkpointing.policy.*/spark.checkpointing.policy None/g' $SPARK_HOME/conf/spark-defaults.conf
 fi
+
+echo "COPYING NEW CONF DIR"
+/root/spark-ec2/copy-dir $SPARK_HOME/conf/    
+
 
 echo "-------------------- Spark --------------------------"
 starttime=`date +%s`
