@@ -45,6 +45,7 @@ mkdir $resultsdir
 echo "Clean Disks on Spark"
 
 pssh -h $SPARK_HOME/conf/slaves "rm /root/spark/work/* -rf"
+pssh -h $SPARK_HOME/conf/slaves "rm /mnt/spark/* -rf"
 
 echo "start all slaves"
 
