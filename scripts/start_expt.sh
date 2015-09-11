@@ -62,10 +62,10 @@ outputfile=$resultsdir/time
 
 echo "--------------- Spark Config --------------------------"
 
-sparkconfig=""
+
 if [ "$CKPT" == "opt" ];
 then
-    $sparkconfig="spark.checkpointing.policy    opt 
+    sparkconfig="spark.checkpointing.policy    opt 
 
 spark.checkpointing.tau      0.2
 
@@ -73,12 +73,10 @@ spark.checkpointing.dir     ckpts"
 
     echo $sparkconfig >> $SPARK_HOME/conf/spark-defaults.conf
     echo "COPYING NEW CONF DIR"
-    /root/spark-ec2/copy-dir $SPARK_HOME/conf/
-    exit
+    /root/spark-ec2/copy-dir $SPARK_HOME/conf/    
 
 elif [ "$CKPT" == "none" ];
-then
-    $sparkconfig=""
+then    
     echo "Default conf is good conf, nothing to do"
 fi
 
