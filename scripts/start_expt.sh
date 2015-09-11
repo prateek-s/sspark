@@ -55,7 +55,7 @@ echo "-------------- Created Directories : $resultsdir"
 date >> "$resultsdir"/start
 echo "$origargs" >> "$resultsdir"/args
 echo "$origargs" >> /root/latest
-cp start_expt.sh "$resultsdir"/start_expt.sh
+cp $SPARK_HOME/scripts/start_expt.sh "$resultsdir"/start_expt.sh
 
 outputfile=$resultsdir/time
 
@@ -79,6 +79,7 @@ then
 fi
 
 echo "-------------------- Spark --------------------------"
+starttime=`date +%s`
 
 if [ "$BENCHMARK" == "pagerank" ];
 then
@@ -133,14 +134,21 @@ echo ">>>>>>>>>> NOW WAIT FOR EXPERIMENT TO FINISH >>>>>>>>>>>>>> "
 while true 
 do
     sleep 10
-#    wget -q http://localhost:8080/json -o json
-#    appstate=`cat json | jq '.activeapps|.[0].state'`
-#    numrunning=`cat json | jq '.activeapps|length'`
-#    if [ "$appstate" != "\"RUNNING\"" && "$numrunning" == 0 ];
-    sparkrunning=`jps | grep -c SparkSubmit`
-    if [ "$sparkrunning" == 0 ]; 
+    wget -q http://localhost:8080/json -O json
+    appstate=`cat json | jq '.activeapps|.[0].state'`
+    numrunning=`cat json | jq '.activeapps|length'`
+    if [ "$appstate" != "\"RUNNING\"" && "$numrunning" == 0 ];
     then
+	sparkrunning=`jps | grep -c SparkSubmit`
+	if [ "$sparkrunning" != 0 ]; 
+	then
+	    echo "sparkprocess still running. Exit anyway"
+	fi
+	
 	echo "EXPT DONE!!!!"
+	endtime=`date +%s`
+	td=$(($endtime-$starttime))
+	echo $td >> $resultsdir/timediff
 	exit 
     fi    
 done
