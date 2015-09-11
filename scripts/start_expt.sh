@@ -42,6 +42,14 @@ progdir="$BENCHMARK"_"$CKPT"_"$TOKILL"_"$REPLENISH"
 resultsdir=$resultshome/$progdir
 mkdir $resultsdir
 
+echo "Clean Disks on Spark"
+
+pssh -h $SPARK_HOME/conf/slaves "rm /root/spark/work/* -rf"
+
+echo "start all slaves"
+
+$SPARK_HOME/sbin/start-all.sh
+
 echo "-------------- Created Directories : $resultsdir"
 
 date >> "$resultsdir"/start
@@ -75,8 +83,8 @@ echo "-------------------- Spark --------------------------"
 if [ "$BENCHMARK" == "pagerank" ];
 then
     echo "$BENCHMARK !"
-    programname="graphX.LiveJournalPageRank"
-    params="s3n://prtk1/sparkdata/part-r-0000[1-7] --numEpart=20"
+    programname="graphx.LiveJournalPageRank"
+    params="s3n://prtk1/sparkdata/part-r-0000[1-7] --numEPart=20"
 
 elif [ "$BENCHMARK" == "als" ];
 then
