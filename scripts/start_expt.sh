@@ -46,6 +46,7 @@ echo "Clean Disks on Spark"
 
 pssh -h $SPARK_HOME/conf/slaves "rm /root/spark/work/* -rf"
 pssh -h $SPARK_HOME/conf/slaves "rm /mnt/spark/* -rf"
+/root/persistent-hdfs/bin/hadoop fs -rmr /ckpts/*
 
 echo "start all slaves"
 
@@ -65,7 +66,7 @@ echo "--------------- Spark Config --------------------------"
 
 if [ "$CKPT" == "opt" ];
 then
-    sparkconfig="spark.checkpointing.policy    opt 
+    sparkconfig="spark.checkpointing.policy    Opt 
 
 spark.checkpointing.tau      0.2
 
