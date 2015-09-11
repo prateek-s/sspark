@@ -1361,7 +1361,8 @@ abstract class RDD[T: ClassTag](
     var ckdir = conf.get("spark.checkpointing.dir", "/tmp")
     if(shouldCheckpointRDD(0)) {
       logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
-    
+      logInfo(this.toDebugString)
+
       if (context.checkpointDir.isEmpty) {
         context.setCheckpointDir(ckdir)
         //throw new SparkException("Checkpoint directory has not been set in the SparkContext")
@@ -1470,34 +1471,29 @@ abstract class RDD[T: ClassTag](
     //dependencies??
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
-    logInfo("CONF IS: %s".format(conf.toString()))
+    logInfo("doCheckpointPartition called after task finished")
     var ckdecision = false 
     val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
     if(!finegrainedOn)
       return
-    else 
-      return 
 
     //this.synchronized {
-
     
     ckdecision = shouldCheckpointRDD(partitionId)
     logInfo("????????????????/CKDECISION IS "+ ckdecision)
     //}
     ckdecision = true
-    if (ckdecision) {
-      if(finegrainedon) {
-	//Based on Policy etc
-	if (checkpointData.isDefined) {
-          //actual checkpointing
-          checkpointData.get.CheckpointPartitionActual(partitionId)
-	}
-	else {
-	  logInfo("!!!CHECKPOINT DATA UNDEFINED> TRYING TO CREATE ONE!!!! ")
-	  checkpointData = Some(new RDDCheckpointData(this))
-	  checkpointData.get.CheckpointPartitionActual(partitionId)
-	}
-      }	
+    if (ckdecision) {      
+      //Based on Policy etc
+      if (checkpointData.isDefined) {
+        //actual checkpointing
+        checkpointData.get.CheckpointPartitionActual(partitionId)
+      }
+      else {
+	logInfo("!!!CHECKPOINT DATA UNDEFINED> TRYING TO CREATE ONE!!!! ")
+	checkpointData = Some(new RDDCheckpointData(this))
+	checkpointData.get.CheckpointPartitionActual(partitionId)
+      }
     }
     //    checkpointData.get.CheckpointPartitionActual(partitionId)
     doneCheckpointing(partitionId)

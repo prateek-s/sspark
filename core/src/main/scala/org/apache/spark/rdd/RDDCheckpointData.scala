@@ -94,10 +94,10 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     /* runJob(rdd, iterator => something, result _, partition list, false) underscore=partially applied function*/
     val partitionToCkpt = List(partitionId)
  
-    rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)
-    
+    rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)    
     return 1
   }
+
 
   // Do the checkpointing of the RDD. Called after the first job using that RDD is over.
   def doCheckpoint() {

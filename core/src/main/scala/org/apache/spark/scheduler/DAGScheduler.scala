@@ -888,8 +888,8 @@ Number of partitions already decided?
       stage.pendingTasks ++= tasks
       logDebug("New pending tasks: " + stage.pendingTasks)
 
-
-      stage.rdd.checkpoint()
+      stage.rdd.checkpoint() //XXX:Correct location?
+      //checkpoint has to be called before the tasks are running.. ??
 
       taskScheduler.submitTasks(
         new TaskSet(tasks.toArray, stage.id, stage.newAttemptId(), stage.jobId, properties))
