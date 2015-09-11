@@ -72,7 +72,11 @@ spark.checkpointing.tau      0.2
 
 spark.checkpointing.dir     ckpts"
 
-    echo $sparkconfig >> $SPARK_HOME/conf/spark-defaults.conf
+    echo "spark.checkpointing.policy    Opt " >> $SPARK_HOME/conf/spark-defaults.conf
+    echo "spark.checkpointing.tau       0.1 " >> $SPARK_HOME/conf/spark-defaults.conf
+    echo "spark.checkpointing.dir    ckpts " >> $SPARK_HOME/conf/spark-defaults.conf
+    echo "spark.checkpointing.finegrained   false " >> $SPARK_HOME/conf/spark-defaults.conf
+
     echo "COPYING NEW CONF DIR"
     /root/spark-ec2/copy-dir $SPARK_HOME/conf/    
 
