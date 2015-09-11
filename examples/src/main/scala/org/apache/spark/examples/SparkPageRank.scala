@@ -53,9 +53,9 @@ object SparkPageRank {
     val sparkConf = new SparkConf().setAppName("PageRank")
     val iters = if (args.length > 0) args(1).toInt else 10
     val ctx = new SparkContext(sparkConf)
-    val lines = ctx.textFile(args(0), 1)
-    val ckdir = "/home/prateeks/ckpts"
-    ctx.setCheckpointDir(ckdir)
+    val lines = ctx.textFile(args(0), 10)
+    // val ckdir = "/home/prateeks/ckpts"
+    // ctx.setCheckpointDir(ckdir)
     System.err.println("MODIFIED TO CHECKPOINT: "+ckdir)
     val links = lines.map{ s =>
       val parts = s.split("\\s+")
@@ -64,13 +64,13 @@ object SparkPageRank {
     
     var ranks = links.mapValues(v => 1.0)
     
-
     for (i <- 1 to iters) {
       val contribs = links.join(ranks).values.flatMap{ case (urls, rank) =>
         val size = urls.size
         urls.map(url => (url, rank / size))
       }
       ranks = contribs.reduceByKey(_ + _).mapValues(0.15 + 0.85 * _)
+      ranks.checkpoint()
     }
 
     val output = ranks.collect()
