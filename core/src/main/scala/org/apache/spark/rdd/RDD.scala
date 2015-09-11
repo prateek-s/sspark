@@ -1447,12 +1447,15 @@ abstract class RDD[T: ClassTag](
    * doCheckpoint() is called recursively on the parent RDDs.
    */
   private[spark] def doCheckpoint() {
+    logInfo("IIIIIIIIIIIIIInside RDD.doCheckpoint.... ") 
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
       if (checkpointData.isDefined) {
         //actual checkpointing
+        logInfo(" RDDCheckpointdata.doCheckpoint.... ")
         checkpointData.get.doCheckpoint()
       } else {
+        logInfo("Checkpointing Dependencies .... ")
         dependencies.foreach(_.rdd.doCheckpoint())
       }
     }
