@@ -66,12 +66,14 @@ sparkconfig=""
 if [ "$CKPT" == "opt" ];
 then
     $sparkconfig="spark.checkpointing.policy    opt 
+
 spark.checkpointing.tau      0.2
-spark.checkpointing.dir     /root/ckpts"
+
+spark.checkpointing.dir     ckpts"
 
     echo $sparkconfig >> $SPARK_HOME/conf/spark-defaults.conf
     echo "COPYING NEW CONF DIR"
-    /root/spark-ec2/copy-dir /spark/conf/
+    /root/spark-ec2/copy-dir $SPARK_HOME/conf/
     exit
 
 elif [ "$CKPT" == "none" ];
