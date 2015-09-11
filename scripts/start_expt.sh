@@ -70,7 +70,8 @@ spark.checkpointing.tau      0.2
 spark.checkpointing.dir     /root/ckpts"
 
     echo $sparkconfig >> $SPARK_HOME/conf/spark-defaults.conf
-    echo "RSYNC REQUIRED. NOT SUPPORTED YET, exiting"
+    echo "COPYING NEW CONF DIR"
+    /root/spark-ec2/copy-dir /spark/conf/
     exit
 
 elif [ "$CKPT" == "none" ];
@@ -98,7 +99,7 @@ elif [ "$BENCHMARK" == "kmeans" ];
 then
     echo "$BENCHMARK !"
     programname="mllib.DenseKMeans"
-    params="s3n://lassKmeans/kmp_[1-20].txt -k 200 --numIterations 100"
+    params="s3n://lassKmeans/kmp_[1-30].txt -k 500 --numIterations 100"
 
 fi
 echo "run-example $programname $params"
@@ -107,21 +108,23 @@ nohup time $SPARK_HOME/bin/run-example $programname $params > $outputfile 2>&1 &
 
 echo "job should be running. Now sleeping...?"
 
-### Expt has started. 
-sleeptime=1200 #20 minutes default
+if [ "$tokill" != 0 ];
+then
+    ### Expt has started. 
+    sleeptime=1200 #20 minutes default
 #
-sleep $sleeptime
+    sleep $sleeptime
 
 #kill nodes 
 
-echo "------------- Wake up to kill nodes -------------"
-slavestokill=`cat $SPARK_HOME/conf/slaves | head -n $TOKILL`
+    echo "------------- Wake up to kill nodes -------------"
+    slavestokill=`cat $SPARK_HOME/conf/slaves | head -n $TOKILL`
 
-pssh -H "$slavestokill" "$SPARK_HOME/scripts/kill-node.sh"
-
+    pssh -H "$slavestokill" "$SPARK_HOME/scripts/kill-node.sh"
+fi
 #This kills spark worker AND hdfs
 
-if [ "$REPLENISH" == "full" ];
+if [ "$tokill" != 0 && "$REPLENISH" == "full" ];
 then
     sleep 100
     $SPARK_HOME/sbin/start-all.sh
@@ -151,6 +154,7 @@ do
 	td=$(($endtime-$starttime))
 	echo $td >> $resultsdir/timediff
 	exit 
-    fi    
+    fi
+    rm json
 done
 
