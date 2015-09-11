@@ -124,7 +124,7 @@ then
 fi
 #This kills spark worker AND hdfs
 
-if [ "$tokill" != 0 && "$REPLENISH" == "full" ];
+if [ "$tokill" != 0 ] && [ "$REPLENISH" == "full" ];
 then
     sleep 100
     $SPARK_HOME/sbin/start-all.sh
@@ -141,7 +141,7 @@ do
     wget -q http://localhost:8080/json -O json
     appstate=`cat json | jq '.activeapps|.[0].state'`
     numrunning=`cat json | jq '.activeapps|length'`
-    if [ "$appstate" != "\"RUNNING\"" && "$numrunning" == 0 ];
+    if [ "$appstate" != "\"RUNNING\"" ] && [ "$numrunning" == 0 ];
     then
 	sparkrunning=`jps | grep -c SparkSubmit`
 	if [ "$sparkrunning" != 0 ]; 
