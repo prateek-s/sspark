@@ -1494,7 +1494,7 @@ abstract class RDD[T: ClassTag](
       else {
 	logInfo("!!!CHECKPOINT DATA UNDEFINED> TRYING TO CREATE ONE!!!! ")
 	checkpointData = Some(new RDDCheckpointData(this))
-	checkpointData.get.CheckpointPartitionActual(partitionId)
+	checkpointData.get.CheckpointPartitionActual(partitionId, contx)
       }
     }
     //    checkpointData.get.CheckpointPartitionActual(partitionId)

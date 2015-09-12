@@ -24,6 +24,7 @@ import org.apache.hadoop.fs.Path
 import org.apache.spark.{Logging, Partition, SerializableWritable, SparkException}
 import org.apache.spark.scheduler.{ResultTask, ShuffleMapTask}
 import org.apache.spark.TaskContext
+import org.apache.spark.Partition
 import org.apache.spark.TaskContextImpl
 
 /**
@@ -98,7 +99,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     logInfo("----------- BEFORE TRYING TO WRITE PARTITION") 
     val c = rdd.context
     logInfo("rdd context is " + c.toString())
-    val i = rdd.iterator(partitionId, contx) 
+    val i = rdd.iterator(Partition(partitionId), contx) 
     CheckpointRDD.my_writeToFile(path.toString, broadcastedConf, i, contx)
     
     return 1

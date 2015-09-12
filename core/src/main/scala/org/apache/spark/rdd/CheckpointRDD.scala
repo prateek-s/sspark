@@ -132,7 +132,7 @@ private[spark] object CheckpointRDD extends Logging {
     }
   }
 
-  def my_writeToFile(
+  def my_writeToFile[T](
     path: String,
     broadcastedConf: Broadcast[SerializableWritable[Configuration]],
     iterator: Iterator[T],
