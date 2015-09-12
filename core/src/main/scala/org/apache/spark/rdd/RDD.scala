@@ -1360,23 +1360,19 @@ abstract class RDD[T: ClassTag](
    */
   def checkpoint() {
     var ckdir = conf.get("spark.checkpointing.dir", "/tmp")
-    if(shouldCheckpointRDD(0)) {
-      logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
-      logInfo(this.toDebugString)
-
-      if (context.checkpointDir.isEmpty) {
-        context.setCheckpointDir(ckdir)
-        //throw new SparkException("Checkpoint directory has not been set in the SparkContext")
-      } else if (checkpointData.isEmpty) {
-        checkpointData = Some(new RDDCheckpointData(this))
-        checkpointData.get.markForCheckpoint()
-      }
-    }
-    else {
-      logInfo("):):)))))) CHECKPOINT REQUEST DENIED: "+this.name)
+    
+    logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
+    logInfo(this.toDebugString)
+    
+    if (context.checkpointDir.isEmpty) {
+      context.setCheckpointDir(ckdir)
+      //throw new SparkException("Checkpoint directory has not been set in the SparkContext")
+    } else if (checkpointData.isEmpty) {
+      checkpointData = Some(new RDDCheckpointData(this))
+      checkpointData.get.markForCheckpoint()
     }
   }
-
+  
 
 
   /**
@@ -1451,6 +1447,9 @@ abstract class RDD[T: ClassTag](
   private[spark] def doCheckpoint() {
     logInfo("IIIIIIIIIIIIIInside RDD.doCheckpoint.... ") 
     //Make actual ckpt decision here. 
+    if(!shouldCheckpointRDD(0)) {
+      logInfo("DDDDDDDDDDD RDD Checkpoint denied") 
+    }
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
       if (checkpointData.isDefined) {

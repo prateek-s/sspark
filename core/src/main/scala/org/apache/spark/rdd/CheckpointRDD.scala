@@ -192,7 +192,11 @@ private[spark] object CheckpointRDD extends Logging {
     val fileInputStream = fs.open(path, bufferSize)
     val serializer = env.serializer.newInstance()
     val deserializeStream = serializer.deserializeStream(fileInputStream)
-
+    
+    logInfo("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    logInfo("%%%%%%%%%% Reading "+path.toString())
+    
+    
     // Register an on-task-completion callback to close the input stream.
     context.addTaskCompletionListener(context => deserializeStream.close())
 
