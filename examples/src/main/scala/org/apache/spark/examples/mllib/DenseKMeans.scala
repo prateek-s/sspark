@@ -83,7 +83,7 @@ object DenseKMeans {
 
     val examples = sc.textFile(params.input).map { line =>
       Vectors.dense(line.split(' ').map(_.toDouble))
-    }.cache()
+    }
 
     val numExamples = examples.count()
 
