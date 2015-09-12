@@ -158,6 +158,7 @@ do
 	echo $td >> $resultsdir/timediff
 	exit 
     fi
+    echo $appstate
     rm json
 done
 
