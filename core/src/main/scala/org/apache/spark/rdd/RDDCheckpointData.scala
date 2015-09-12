@@ -58,7 +58,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
 
   // Mark the RDD for checkpointing
   def markForCheckpoint() {
-    logInfo("MMMMMMMMMMMMMarking this RDD for checkpointing") 
+    logWarning("Marking this RDD for checkpointing" + rdd.name) 
     RDDCheckpointData.synchronized {
       if (cpState == Initialized) cpState = MarkedForCheckpoint
     }
@@ -118,7 +118,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
         return
       }
     }
-    logInfo("----------------------------- CKPT ACTUAL START") 
+    logWarning("---- CKPT ACTUAL START" + rdd.name) 
     // Create the output path for the checkpoint
     val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)
     val fs = path.getFileSystem(rdd.context.hadoopConfiguration)
@@ -146,7 +146,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
       rdd.markCheckpointed(newRDD)   // Update the RDD's dependencies and partitions
       cpState = Checkpointed
     }
-    logInfo("Done checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
+    logWarning("Done checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
   }
 
   // Get preferred location of a split after checkpointing

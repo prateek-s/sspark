@@ -294,7 +294,7 @@ abstract class RDD[T: ClassTag](
    */
   private[spark] def computeOrReadCheckpoint(split: Partition, context: TaskContext): Iterator[T] =
   {
-    logInfo("<<<< IN computeOrReadCheckpoint : %d".format(split.index)) ;
+    logWarning("<<<< IN computeOrReadCheckpoint : %d".format(split.index)) ;
     //Recursion. iterator calls getOrCompute
     if (isCheckpointed) firstParent[T].iterator(split, context) else compute(split, context)
   }
@@ -1361,7 +1361,7 @@ abstract class RDD[T: ClassTag](
   def checkpoint() {
     var ckdir = conf.get("spark.checkpointing.dir", "/tmp")
     
-    logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
+    logWarning(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
     //logInfo(this.toDebugString) //outofmemory  when printing pagerank rdd lineage
     
     if (context.checkpointDir.isEmpty) {
@@ -1445,19 +1445,19 @@ abstract class RDD[T: ClassTag](
    * doCheckpoint() is called recursively on the parent RDDs.
    */
   private[spark] def doCheckpoint() {
-    logInfo("IIIIIIIIIIIIIInside RDD.doCheckpoint.... ") 
+    logWarning("Inside RDD.doCheckpoint.... " + this.name) 
     //Make actual ckpt decision here. 
     if(!shouldCheckpointRDD(0)) {
-      logInfo("DDDDDDDDDDD RDD Checkpoint denied") 
+      logWarning("DDDDDDDDDDD RDD Checkpoint denied") 
     }
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
       if (checkpointData.isDefined) {
         //actual checkpointing
-        logInfo(" RDDCheckpointdata.doCheckpoint.... ")
+        logWarning(" RDDCheckpointdata.doCheckpoint.... ")
         checkpointData.get.doCheckpoint()
       } else {
-        logInfo("Checkpointing Dependencies .... ")
+        logWarning("Checkpointing Dependencies .... ")
         dependencies.foreach(_.rdd.doCheckpoint())
       }
     }
@@ -1569,7 +1569,7 @@ abstract class RDD[T: ClassTag](
        return true
      }
      else {
-       logInfo("Nopes no ckpt due yet")
+       logWarning("Nopes no ckpt due yet for"+partitionId)
      }
     
     return false

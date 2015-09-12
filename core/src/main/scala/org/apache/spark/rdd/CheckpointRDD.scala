@@ -91,7 +91,7 @@ private[spark] object CheckpointRDD extends Logging {
       broadcastedConf: Broadcast[SerializableWritable[Configuration]],
       blockSize: Int = -1
     )(ctx: TaskContext, iterator: Iterator[T]) {
-    logInfo(".......... Inside write to file ")
+    logWarning(".......... Inside write to file "+path)
     val env = SparkEnv.get
     val outputDir = new Path(path)
     val fs = outputDir.getFileSystem(broadcastedConf.value.value)
@@ -120,13 +120,13 @@ private[spark] object CheckpointRDD extends Logging {
 
     if (!fs.rename(tempOutputPath, finalOutputPath)) {
       if (!fs.exists(finalOutputPath)) {
-        logInfo("Deleting tempOutputPath " + tempOutputPath)
+        logWarning("Deleting tempOutputPath " + tempOutputPath)
         fs.delete(tempOutputPath, false)
         throw new IOException("Checkpoint failed: failed to save output of task: "
           + ctx.attemptNumber + " and final output path does not exist")
       } else {
         // Some other copy of this task must've finished before us and renamed it
-        logInfo("Final output path " + finalOutputPath + " already exists; not overwriting it")
+        logWarning("Final output path " + finalOutputPath + " already exists; not overwriting it")
         fs.delete(tempOutputPath, false)
       }
     }
@@ -193,8 +193,8 @@ private[spark] object CheckpointRDD extends Logging {
     val serializer = env.serializer.newInstance()
     val deserializeStream = serializer.deserializeStream(fileInputStream)
     
-    logInfo("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    logInfo("%%%%%%%%%% Reading "+path.toString())
+    logWarning("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    logWarning("%%%%%%%%%% Reading "+path.toString())
     
     
     // Register an on-task-completion callback to close the input stream.
