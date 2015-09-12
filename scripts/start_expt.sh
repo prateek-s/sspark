@@ -87,7 +87,7 @@ then
     echo "$BENCHMARK !"
     programname="graphx.LiveJournalPageRank"
     #params="s3n://prtk1/sparkdata/part-r-0000[1-2] --numEPart=20"
-    params=lj3.txt --numEPart=20 --numIter=10
+    params="lj3.txt --numEPart=20 --numIter=10"
     #programname="SparkPageRank"
     #params="s3n://prtk1/sparkdata/part-r-0000[1-2] 10"
 
@@ -112,9 +112,9 @@ echo "job should be running. Now sleeping...?"
 
 if [ "$TOKILL" != 0 ];
 then
-    echo "Sleeping 900 s"
-    ### Expt has started. 
     sleeptime=300 #5 minutes default
+    echo "Sleeping $sleeptime s"
+    ### Expt has started. 
 #
     sleep $sleeptime
 
