@@ -628,6 +628,17 @@ private[spark] class TaskSetManager(
   def handleSuccessfulTask(tid: Long, result: DirectTaskResult[_]) = {
     val info = taskInfos(tid)
     val index = info.index
+    val task = tasks(index) 
+
+    logInfo("IN TASK SET MANAGER AND TASK CONTEXT IS " + task.context.toString())
+
+    val stage = stageIdToStage(task.stageId)
+    val rdd = stage.rdd
+    val partitionId: Int = task.partitionId
+    logInfo("The task context is " + task.context.toString()) 
+    rdd.doCheckpointPartition(partitionId, task.context)
+
+
     info.markSuccessful()
     removeRunningTask(tid)
     sched.dagScheduler.taskEnded(

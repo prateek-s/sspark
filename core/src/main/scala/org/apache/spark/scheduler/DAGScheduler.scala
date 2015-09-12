@@ -888,7 +888,10 @@ Number of partitions already decided?
       stage.pendingTasks ++= tasks
       logDebug("New pending tasks: " + stage.pendingTasks)
 
+
+      //IF PER-RDD CHECKPOINT ENABLE 
       stage.rdd.checkpoint() //XXX:Correct location?
+
       //checkpoint has to be called before the tasks are running.. ??
 
       taskScheduler.submitTasks(
@@ -911,8 +914,9 @@ Number of partitions already decided?
     val stage = stageIdToStage(task.stageId)
     val rdd = stage.rdd
     val partitionId: Int = task.partitionId
-    logInfo("The task context is " + task.context.toString()) 
-    rdd.doCheckpointPartition(partitionId, task.context)
+    //XXX
+    //logInfo("The task context is " + task.context.toString()) 
+    //rdd.doCheckpointPartition(partitionId, task.context)
     return 1
   }
 
