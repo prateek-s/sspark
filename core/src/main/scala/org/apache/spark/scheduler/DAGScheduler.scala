@@ -751,7 +751,7 @@ Number of partitions already decided?
         return
     }
     //IF PER-RDD CHECKPOINT ENABLE 
-    stage.rdd.checkpoint() //XXX:Correct location?
+    //    stage.rdd.checkpoint() //XXX:Correct location? Moved to SparkContext
     
     //checkpoint has to be called before the tasks are running.. ??
 

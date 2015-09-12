@@ -63,10 +63,10 @@ private[spark] abstract class Task[T](val stageId: Int, var partitionId: Int) ex
     try {
       runTask(context)
     } finally {
-      val stage = SparkContext.dagScheduler.stageIdToStage(stageId)
-      val rdd = stage.rdd
 
-      rdd.doCheckpointPartition(partitionId, context)
+      // val stage = SparkContext.dagScheduler.stageIdToStage(stageId)
+      // val rdd = stage.rdd
+      // rdd.doCheckpointPartition(partitionId, context)
 
       context.markTaskCompleted()
       TaskContextHelper.unset()

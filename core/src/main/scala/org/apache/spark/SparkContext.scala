@@ -1468,7 +1468,8 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
       logInfo("RDD's recursive dependencies:\n" + rdd.toDebugString)
     }
    
-    
+    rdd.checkpoint()
+
     dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, allowLocal,
       resultHandler, localProperties.get)
     progressBar.foreach(_.finishAll())
