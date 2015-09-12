@@ -7,9 +7,9 @@ echo 3 > /proc/sys/vm/drop_caches
 
 echo "______________ CLEARING ON-DISK TMP_______________"
 
-rm -rf /mnt/spark/* #For tmp results?
+#rm -rf /mnt/spark/* #For tmp results?
 
-rm -rf /tmp/*
+#rm -rf /tmp/*
 
 
 

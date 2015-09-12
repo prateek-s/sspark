@@ -85,10 +85,10 @@ starttime=`date +%s`
 if [ "$BENCHMARK" == "pagerank" ];
 then
     echo "$BENCHMARK !"
-    #programname="graphx.LiveJournalPageRank"
-    #params="s3n://prtk1/sparkdata/part-r-0000[1-3] --numEPart=20"
-    programname="SparkPageRank"
-    params="s3n://prtk1/sparkdata/part-r-0000[1-2] 10"
+    programname="graphx.LiveJournalPageRank"
+    params="s3n://prtk1/sparkdata/part-r-0000[1-2] --numEPart=20"
+    #programname="SparkPageRank"
+    #params="s3n://prtk1/sparkdata/part-r-0000[1-2] 10"
 
 elif [ "$BENCHMARK" == "als" ];
 then
