@@ -1465,13 +1465,15 @@ abstract class RDD[T: ClassTag](
 
   val SavedPartitions = new ListBuffer[Int]
 
-  def doCheckpointPartition(partitionId: Int) {
+  def doCheckpointPartition(partitionId: Int, contx: TaskContextImpl) {
     //Check Bitmap. If falls within checkpointed region, exit.
     //checkpointData.get.CheckpointPartitionActual(id)
     //dependencies??
     //Once completed, check to see if all partitions are completed
     //Rdd can then be marked as Checkpointed and dependencies cleared etc.
     logInfo("doCheckpointPartition called after task finished")
+    logInfo("Task context is" + contx.toString())
+
     var ckdecision = false 
     val finegrainedOn = conf.getBoolean("spark.checkpointing.finegrained", false)
     if(!finegrainedOn)
@@ -1487,7 +1489,7 @@ abstract class RDD[T: ClassTag](
       //Based on Policy etc
       if (checkpointData.isDefined) {
         //actual checkpointing
-        checkpointData.get.CheckpointPartitionActual(partitionId)
+        checkpointData.get.CheckpointPartitionActual(partitionId, contx)
       }
       else {
 	logInfo("!!!CHECKPOINT DATA UNDEFINED> TRYING TO CREATE ONE!!!! ")

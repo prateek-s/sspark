@@ -79,7 +79,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
   * Need: Partition size, estimated recompute cost.
   * 
   */
-  def CheckpointPartitionActual (partitionId: Int) {
+  def CheckpointPartitionActual (partitionId: Int, contx: TaskContextImpl) {
     //Write the partition here. Partition ID is a Task parameter.
     // Create the output path for the checkpoint
     val path = new Path(rdd.context.checkpointDir.get, "rdd-" + rdd.id)
@@ -93,8 +93,11 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
       new SerializableWritable(rdd.context.hadoopConfiguration))
     /* runJob(rdd, iterator => something, result _, partition list, false) underscore=partially applied function*/
     val partitionToCkpt = List(partitionId)
- 
-    rdd.context.runJob(rdd, CheckpointRDD.writeToFile[T](path.toString, broadcastedConf) _, partitionToCkpt, false)    
+    logInfo("----------- BEFORE TRYING TO WRITE PARTITION") 
+    val c = rdd.context
+    logInfo("rdd context is " + c.toString())
+    CheckpointRDD.my_writeToFile[T](path.toString, broadcastedConf,  partitionToCkpt, contx)
+    
     return 1
   }
 

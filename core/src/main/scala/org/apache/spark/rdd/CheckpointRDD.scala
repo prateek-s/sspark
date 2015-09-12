@@ -91,6 +91,55 @@ private[spark] object CheckpointRDD extends Logging {
       broadcastedConf: Broadcast[SerializableWritable[Configuration]],
       blockSize: Int = -1
     )(ctx: TaskContext, iterator: Iterator[T]) {
+    logInfo(".......... Inside write to file ")
+    val env = SparkEnv.get
+    val outputDir = new Path(path)
+    val fs = outputDir.getFileSystem(broadcastedConf.value.value)
+
+    val finalOutputName = splitIdToFile(ctx.partitionId)
+    val finalOutputPath = new Path(outputDir, finalOutputName)
+    val tempOutputPath =
+      new Path(outputDir, "." + finalOutputName + "-attempt-" + ctx.attemptNumber)
+
+    if (fs.exists(tempOutputPath)) {
+      throw new IOException("Checkpoint failed: temporary path " +
+        tempOutputPath + " already exists")
+    }
+    val bufferSize = env.conf.getInt("spark.buffer.size", 65536)
+
+    val fileOutputStream = if (blockSize < 0) {
+      fs.create(tempOutputPath, false, bufferSize)
+    } else {
+      // This is mainly for testing purpose
+      fs.create(tempOutputPath, false, bufferSize, fs.getDefaultReplication, blockSize)
+    }
+    val serializer = env.serializer.newInstance()
+    val serializeStream = serializer.serializeStream(fileOutputStream)
+    serializeStream.writeAll(iterator)
+    serializeStream.close()
+
+    if (!fs.rename(tempOutputPath, finalOutputPath)) {
+      if (!fs.exists(finalOutputPath)) {
+        logInfo("Deleting tempOutputPath " + tempOutputPath)
+        fs.delete(tempOutputPath, false)
+        throw new IOException("Checkpoint failed: failed to save output of task: "
+          + ctx.attemptNumber + " and final output path does not exist")
+      } else {
+        // Some other copy of this task must've finished before us and renamed it
+        logInfo("Final output path " + finalOutputPath + " already exists; not overwriting it")
+        fs.delete(tempOutputPath, false)
+      }
+    }
+  }
+
+  def my_writeToFile[T: ClassTag](
+    path: String,
+    broadcastedConf: Broadcast[SerializableWritable[Configuration]],
+    iterator: Iterator[T],
+    ctx: TaskContext,
+    blockSize: Int = -1
+    ) {
+    logInfo(".......... Inside write to file ")
     val env = SparkEnv.get
     val outputDir = new Path(path)
     val fs = outputDir.getFileSystem(broadcastedConf.value.value)
