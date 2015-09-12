@@ -129,7 +129,7 @@ object MovieLensALS {
       } else {
         Rating(fields(0).toInt, fields(1).toInt, fields(2).toDouble)
       }
-    }.cache()
+    }
 
     val numRatings = ratings.count()
     val numUsers = ratings.map(_.user).distinct().count()
@@ -138,7 +138,7 @@ object MovieLensALS {
     println(s"Got $numRatings ratings from $numUsers users on $numMovies movies.")
 
     val splits = ratings.randomSplit(Array(0.8, 0.2))
-    val training = splits(0).cache()
+    val training = splits(0)
     val test = if (params.implicitPrefs) {
       /*
        * 0 means "don't know" and positive values mean "confident that the prediction should be 1".
@@ -150,7 +150,7 @@ object MovieLensALS {
       splits(1).map(x => Rating(x.user, x.product, if (x.rating > 0) 1.0 else 0.0))
     } else {
       splits(1)
-    }.cache()
+    }
 
     val numTraining = training.count()
     val numTest = test.count()

@@ -1473,7 +1473,7 @@ class SparkContext(config: SparkConf) extends Logging with ExecutorAllocationCli
     dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, allowLocal,
       resultHandler, localProperties.get)
     progressBar.foreach(_.finishAll())
-    logInfo("CCCCCCCCCCCCCCCalling rdd.doCheckpoint now...")
+    logWarning("Calling rdd.doCheckpoint now..."+rdd.name)
     rdd.doCheckpoint()
   }
 
