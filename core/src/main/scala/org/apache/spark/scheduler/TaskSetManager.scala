@@ -633,7 +633,7 @@ private[spark] class TaskSetManager(
 
     logInfo("IN TASK SET MANAGER AND TASK CONTEXT IS " + task.context.toString())
 
-    val stage = sched.DAGScheduler.stageIdToStage(task.stageId)
+    val stage = sched.dagScheduler.stageIdToStage(task.stageId)
     val rdd = stage.rdd
     val partitionId: Int = task.partitionId
     logInfo("The task context is " + task.context.toString()) 
