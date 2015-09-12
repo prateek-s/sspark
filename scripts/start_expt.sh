@@ -112,7 +112,7 @@ echo "job should be running. Now sleeping...?"
 if [ "$tokill" != 0 ];
 then
     ### Expt has started. 
-    sleeptime=900 #15 minutes default
+    sleeptime=300 #5 minutes default
 #
     sleep $sleeptime
 
