@@ -31,6 +31,7 @@ import org.apache.spark._
 import org.apache.spark.executor.TaskMetrics
 import org.apache.spark.TaskState.TaskState
 import org.apache.spark.util.{Clock, SystemClock, Utils}
+import org.apache.spark.scheduler.DAGScheduler
 
 /**
  * Schedules the tasks within a single TaskSet in the TaskSchedulerImpl. This class keeps track of
@@ -632,7 +633,7 @@ private[spark] class TaskSetManager(
 
     logInfo("IN TASK SET MANAGER AND TASK CONTEXT IS " + task.context.toString())
 
-    val stage = stageIdToStage(task.stageId)
+    val stage = DAGScheduler.stageIdToStage(task.stageId)
     val rdd = stage.rdd
     val partitionId: Int = task.partitionId
     logInfo("The task context is " + task.context.toString()) 

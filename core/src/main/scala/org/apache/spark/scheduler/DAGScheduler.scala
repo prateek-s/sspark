@@ -59,7 +59,7 @@ import org.apache.spark.storage.BlockManagerMessages.BlockManagerHeartbeat
  *  - When adding a new data structure, update `DAGSchedulerSuite.assertDataStructuresEmpty` to
  *    include the new structure. This will help to catch memory leaks.
  */
-private[spark]
+//private[spark]
 class DAGScheduler(
     private[scheduler] val sc: SparkContext,
     private[scheduler] val taskScheduler: TaskScheduler,
