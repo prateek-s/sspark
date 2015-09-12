@@ -135,7 +135,7 @@ private[spark] object CheckpointRDD extends Logging {
   def my_writeToFile(
     path: String,
     broadcastedConf: Broadcast[SerializableWritable[Configuration]],
-    iterator: Iterator,
+    iterator: Iterator[T],
     ctx: TaskContext ) {
     logInfo(".......... Inside write to file ")
     val env = SparkEnv.get
