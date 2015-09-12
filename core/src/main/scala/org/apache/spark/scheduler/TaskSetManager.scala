@@ -631,7 +631,6 @@ private[spark] class TaskSetManager(
     val index = info.index
     val task = tasks(index) 
 
-    logInfo("IN TASK SET MANAGER AND TASK CONTEXT IS " + task.context.toString())
 
     val stage = sched.dagScheduler.stageIdToStage(task.stageId)
     val rdd = stage.rdd
