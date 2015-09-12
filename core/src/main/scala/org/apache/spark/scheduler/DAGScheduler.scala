@@ -750,6 +750,11 @@ Number of partitions already decided?
         listener.jobFailed(e)
         return
     }
+    //IF PER-RDD CHECKPOINT ENABLE 
+    stage.rdd.checkpoint() //XXX:Correct location?
+    
+    //checkpoint has to be called before the tasks are running.. ??
+
     if (finalStage != null) {
       val job = new ActiveJob(jobId, finalStage, func, partitions, callSite, listener, properties)
       clearCacheLocs()
@@ -889,10 +894,6 @@ Number of partitions already decided?
       logDebug("New pending tasks: " + stage.pendingTasks)
 
 
-      //IF PER-RDD CHECKPOINT ENABLE 
-      stage.rdd.checkpoint() //XXX:Correct location?
-
-      //checkpoint has to be called before the tasks are running.. ??
 
       taskScheduler.submitTasks(
         new TaskSet(tasks.toArray, stage.id, stage.newAttemptId(), stage.jobId, properties))
