@@ -85,10 +85,10 @@ starttime=`date +%s`
 if [ "$BENCHMARK" == "pagerank" ];
 then
     echo "$BENCHMARK !"
-    #programname="graphx.LiveJournalPageRank"
-    #params="s3n://prtk1/sparkdata/part-r-0000[1-7] --numEPart=20"
-    programname="SparkPageRank"
-    params="s3n://prtk1/sparkdata/part-r-0000[1-2] 10"
+    programname="graphx.LiveJournalPageRank"
+    params="s3n://prtk1/sparkdata/part-r-0000[1-3] --numEPart=20"
+    #programname="SparkPageRank"
+    #params="s3n://prtk1/sparkdata/part-r-0000[1-2] 10"
 
 elif [ "$BENCHMARK" == "als" ];
 then
@@ -109,8 +109,9 @@ nohup time $SPARK_HOME/bin/run-example $programname $params > $outputfile 2>&1 &
 
 echo "job should be running. Now sleeping...?"
 
-if [ "$tokill" != 0 ];
+if [ "$TOKILL" != 0 ];
 then
+    echo "Sleeping 900 s"
     ### Expt has started. 
     sleeptime=900 #15 minutes default
 #
@@ -125,8 +126,9 @@ then
 fi
 #This kills spark worker AND hdfs
 
-if [ "$tokill" != 0 ] && [ "$REPLENISH" == "full" ];
+if [ "$TOKILL" != 0 ] && [ "$REPLENISH" == "full" ];
 then
+    echo "Wait 100s before waking up"
     sleep 100
     $SPARK_HOME/sbin/start-all.sh
 fi
