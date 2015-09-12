@@ -96,7 +96,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
     logInfo("----------- BEFORE TRYING TO WRITE PARTITION") 
     val c = rdd.context
     logInfo("rdd context is " + c.toString())
-    CheckpointRDD.my_writeToFile[T](path.toString, broadcastedConf,  partitionToCkpt, contx)
+    CheckpointRDD.my_writeToFile[Int](path.toString, broadcastedConf, partitionToCkpt.toArray, contx)
     
     return 1
   }
