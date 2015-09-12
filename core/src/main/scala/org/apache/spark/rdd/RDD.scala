@@ -1362,7 +1362,7 @@ abstract class RDD[T: ClassTag](
     var ckdir = conf.get("spark.checkpointing.dir", "/tmp")
     
     logInfo(")))))))) CHECKPOINT REQUEST ACCEPTED: "+this.name)
-    logInfo(this.toDebugString)
+    //logInfo(this.toDebugString) //outofmemory  when printing pagerank rdd lineage
     
     if (context.checkpointDir.isEmpty) {
       context.setCheckpointDir(ckdir)
