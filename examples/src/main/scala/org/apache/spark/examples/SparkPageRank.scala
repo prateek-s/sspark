@@ -56,7 +56,7 @@ object SparkPageRank {
     val lines = ctx.textFile(args(0), 10)
     // val ckdir = "/home/prateeks/ckpts"
     // ctx.setCheckpointDir(ckdir)
-    System.err.println("MODIFIED TO CHECKPOINT: "+ckdir)
+
     val links = lines.map{ s =>
       val parts = s.split("\\s+")
       (parts(0), parts(1))
