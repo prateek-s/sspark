@@ -631,14 +631,6 @@ private[spark] class TaskSetManager(
     val index = info.index
     val task = tasks(index) 
 
-
-    val stage = sched.dagScheduler.stageIdToStage(task.stageId)
-    val rdd = stage.rdd
-    val partitionId: Int = task.partitionId
-    logInfo("The task context is " + task.context.toString()) 
-    rdd.doCheckpointPartition(partitionId, task.context)
-
-
     info.markSuccessful()
     removeRunningTask(tid)
     sched.dagScheduler.taskEnded(
