@@ -132,13 +132,11 @@ private[spark] object CheckpointRDD extends Logging {
     }
   }
 
-  def my_writeToFile[T: ClassTag](
+  def my_writeToFile(
     path: String,
     broadcastedConf: Broadcast[SerializableWritable[Configuration]],
-    iterator: Iterator[T],
-    ctx: TaskContext,
-    blockSize: Int = -1
-    ) {
+    iterator: Iterator,
+    ctx: TaskContext ) {
     logInfo(".......... Inside write to file ")
     val env = SparkEnv.get
     val outputDir = new Path(path)
@@ -154,7 +152,7 @@ private[spark] object CheckpointRDD extends Logging {
         tempOutputPath + " already exists")
     }
     val bufferSize = env.conf.getInt("spark.buffer.size", 65536)
-
+    val blockSize = -1 
     val fileOutputStream = if (blockSize < 0) {
       fs.create(tempOutputPath, false, bufferSize)
     } else {
