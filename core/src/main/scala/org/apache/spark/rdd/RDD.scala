@@ -164,7 +164,7 @@ abstract class RDD[T: ClassTag](
   var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
  // var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
 
-  this.checkpoint() 
+
  /**********************************************************************/
 
   /**
