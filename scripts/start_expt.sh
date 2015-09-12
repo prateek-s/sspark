@@ -86,7 +86,8 @@ if [ "$BENCHMARK" == "pagerank" ];
 then
     echo "$BENCHMARK !"
     programname="graphx.LiveJournalPageRank"
-    params="s3n://prtk1/sparkdata/part-r-0000[1-2] --numEPart=20"
+    #params="s3n://prtk1/sparkdata/part-r-0000[1-2] --numEPart=20"
+    params=lj3.txt --numEPart=20 --numIter=10
     #programname="SparkPageRank"
     #params="s3n://prtk1/sparkdata/part-r-0000[1-2] 10"
 
