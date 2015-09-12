@@ -27,7 +27,7 @@ import org.apache.spark.executor.TaskMetrics
 import org.apache.spark.serializer.SerializerInstance
 import org.apache.spark.util.ByteBufferInputStream
 import org.apache.spark.util.Utils
-
+import org.apache.spark.SparkContext
 
 /**
  * A unit of execution. We have two kinds of Task's in Spark:
@@ -63,9 +63,9 @@ private[spark] abstract class Task[T](val stageId: Int, var partitionId: Int) ex
     try {
       runTask(context)
     } finally {
-      val stage = sched.dagScheduler.stageIdToStage(stageId)
+      val stage = SparkContext.dagScheduler.stageIdToStage(stageId)
       val rdd = stage.rdd
-      logInfo("The task context is " + context.toString()) 
+
       rdd.doCheckpointPartition(partitionId, context)
 
       context.markTaskCompleted()
