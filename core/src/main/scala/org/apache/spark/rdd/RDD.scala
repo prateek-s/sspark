@@ -164,6 +164,7 @@ abstract class RDD[T: ClassTag](
   var target_tau:Double = conf.getDouble("spark.checkpointing.tau", 0) ;
  // var perstage = conf.getBoolean("spark.checkpointing.perstage", false) ;
 
+  this.checkpoint() 
  /**********************************************************************/
 
   /**
@@ -1449,6 +1450,7 @@ abstract class RDD[T: ClassTag](
    */
   private[spark] def doCheckpoint() {
     logInfo("IIIIIIIIIIIIIInside RDD.doCheckpoint.... ") 
+    //Make actual ckpt decision here. 
     if (!doCheckpointCalled) {
       doCheckpointCalled = true
       if (checkpointData.isDefined) {
