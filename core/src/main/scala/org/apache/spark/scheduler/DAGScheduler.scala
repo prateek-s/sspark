@@ -911,7 +911,7 @@ Number of partitions already decided?
     val stage = stageIdToStage(task.stageId)
     val rdd = stage.rdd
     val partitionId: Int = task.partitionId
-
+    logInfo("The task context is " + task.context.toString()) 
     rdd.doCheckpointPartition(partitionId, task.context)
     return 1
   }
@@ -952,6 +952,7 @@ Number of partitions already decided?
     val task = event.task
     val stageId = task.stageId
     val taskType = Utils.getFormattedClassName(task)
+    checkpointTask(task)
 
     outputCommitCoordinator.taskCompleted(stageId, task.partitionId,
       event.taskInfo.attempt, event.reason)
@@ -968,8 +969,7 @@ Number of partitions already decided?
       // Skip all the actions if the stage has been cancelled.
       return
     }
-
-    checkpointTask(task)
+    
 
     val stage = stageIdToStage(task.stageId)
     event.reason match {
