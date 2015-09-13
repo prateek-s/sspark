@@ -1449,6 +1449,7 @@ abstract class RDD[T: ClassTag](
     //Make actual ckpt decision here. 
     if(!shouldCheckpointRDD(0)) {
       logWarning("DDDDDDDDDDD RDD Checkpoint denied") 
+      return
     }
     if (!doCheckpointCalled) {
       doCheckpointCalled = true

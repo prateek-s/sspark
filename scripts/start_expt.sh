@@ -68,12 +68,15 @@ echo "--------------- Spark Config --------------------------"
 if [ "$CKPT" == "opt" ];
 then
     sed -i 's/spark.checkpointing.policy.*/spark.checkpointing.policy Opt/g' $SPARK_HOME/conf/spark-defaults.conf
+    sed -i 's/spark.shuffle.spill.*/spark.shuffle.spill True/g' $SPARK_HOME/conf/spark-defaults.conf
 elif [ "$CKPT" == "all" ];
 then
     sed -i 's/spark.checkpointing.policy.*/spark.checkpointing.policy All/g' $SPARK_HOME/conf/spark-defaults.conf
+    sed -i 's/spark.shuffle.spill.*/spark.shuffle.spill True/g' $SPARK_HOME/conf/spark-defaults.conf
 elif [ "$CKPT" == "none" ];
 then    
     sed -i 's/spark.checkpointing.policy.*/spark.checkpointing.policy None/g' $SPARK_HOME/conf/spark-defaults.conf
+    sed -i 's/spark.shuffle.spill.*/spark.shuffle.spill False/g' $SPARK_HOME/conf/spark-defaults.conf
 fi
 
 echo "COPYING NEW CONF DIR"
