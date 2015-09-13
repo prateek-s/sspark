@@ -46,7 +46,8 @@ echo "Clean Disks on Spark"
 
 pssh -h $SPARK_HOME/conf/slaves "rm /root/spark/work/* -rf"
 pssh -h $SPARK_HOME/conf/slaves "rm /mnt/spark/* -rf"
-/root/persistent-hdfs/bin/hadoop fs -rmr /ckpts/*
+
+/root/persistent-hdfs/bin/hadoop fs -rmr ckpts/*
 
 echo "start all slaves"
 
@@ -77,6 +78,7 @@ fi
 
 echo "COPYING NEW CONF DIR"
 /root/spark-ec2/copy-dir $SPARK_HOME/conf/    
+
 
 
 echo "-------------------- Spark --------------------------"
@@ -123,7 +125,7 @@ then
     echo "------------- Wake up to kill nodes -------------"
     slavestokill=`cat $SPARK_HOME/conf/slaves | head -n $TOKILL`
 
-    pssh -H "$slavestokill" "$SPARK_HOME/scripts/kill-node.sh"
+    pssh -H "$slavestokill" "$SPARK_HOME/scripts/kill-node.sh $CKPT"
 fi
 #This kills spark worker AND hdfs
 
