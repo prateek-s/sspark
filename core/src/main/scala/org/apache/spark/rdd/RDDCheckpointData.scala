@@ -146,6 +146,7 @@ private[spark] class RDDCheckpointData[T: ClassTag](@transient rdd: RDD[T])
       rdd.markCheckpointed(newRDD)   // Update the RDD's dependencies and partitions
       cpState = Checkpointed
     }
+    rdd.sc.prev_ckpt_time =  System.currentTimeMillis() 
     logWarning("Done checkpointing RDD " + rdd.id + " to " + path + ", new parent is RDD " + newRDD.id)
   }
 

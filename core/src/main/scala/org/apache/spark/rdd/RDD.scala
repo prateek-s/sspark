@@ -83,7 +83,7 @@ abstract class RDD[T: ClassTag](
     logWarning("Spark does not support nested RDDs (see SPARK-5063)")
   }
 
-  private def sc: SparkContext = {
+   def sc: SparkContext = {
     if (_sc == null) {
       throw new SparkException(
         "RDD transformations and actions can only be invoked by the driver, not inside of other " +
@@ -1507,18 +1507,18 @@ abstract class RDD[T: ClassTag](
     //get the policy from the configuration
     //All, periodic, OPT. shuffle. 
 
-    if(ckptFlag == 1) //already marked
-      return true
-    if(ckptFlag == -1) //already marked
-      return false
-    if(ckptFlag == 0) { //undecided, dispatch policy here.
-      policystring match {
-        case "None" => return policy_none(partitionId)
-        case "All" => return policy_all(partitionId)
-        case "Graph" => return policy_graph(partitionId)
-        case "Opt" => return policy_opt(partitionId)
-      }
+    // if(ckptFlag == 1) //already marked
+    //   return true
+    // if(ckptFlag == -1) //already marked
+    //   return false
+    //if(ckptFlag == 0) { //undecided, dispatch policy here.
+    policystring match {
+      case "None" => return policy_none(partitionId)
+      case "All" => return policy_all(partitionId)
+      case "Graph" => return policy_graph(partitionId)
+      case "Opt" => return policy_opt(partitionId)
     }
+    //}
     return false 
   }
 
@@ -1565,13 +1565,12 @@ abstract class RDD[T: ClassTag](
   //   //Else, global time.
      if((current_time - prev_ckpt_time) > target_tau*3600) {
        //reset the clock.
-       sc.prev_ckpt_time = System.currentTimeMillis() 
+       logWarning("Ckpt overdue by: " + (current_time - prev_ckpt_time))
        return true
      }
      else {
-       logWarning("Nopes no ckpt due yet for"+partitionId)
+       logWarning("Nopes no ckpt due yet " + (current_time - prev_ckpt_time))
      }
-    
     return false
   }
 

@@ -92,19 +92,21 @@ then
     params="lj3.txt --numEPart=20 --numIter=10"
     #programname="SparkPageRank"
     #params="s3n://prtk1/sparkdata/part-r-0000[1-2] 10"
+    sleeptime=300
 
 elif [ "$BENCHMARK" == "als" ];
 then
     echo "$BENCHMARK !"
     programname="mllib.MovieLensALS"
     params="s3n://lassALS/movielens00[6-7][0-9].txt --rank 5"
+    sleeptime=900
 
 elif [ "$BENCHMARK" == "kmeans" ];
 then
     echo "$BENCHMARK !"
     programname="mllib.DenseKMeans"
     params="s3n://lassKmeans/kmp_[1-30].txt -k 500 --numIterations 100"
-
+    sleeptime=900
 fi
 echo "run-example $programname $params"
 
@@ -114,20 +116,13 @@ echo "job should be running. Now sleeping...?"
 
 if [ "$TOKILL" != 0 ];
 then
-    sleeptime=300 #5 minutes default
     echo "Sleeping $sleeptime s"
-    ### Expt has started. 
-#
     sleep $sleeptime
-
-#kill nodes 
-
     echo "------------- Wake up to kill nodes -------------"
     slavestokill=`cat $SPARK_HOME/conf/slaves | head -n $TOKILL`
-
     pssh -H "$slavestokill" "$SPARK_HOME/scripts/kill-node.sh $CKPT"
 fi
-#This kills spark worker AND hdfs
+
 
 if [ "$TOKILL" != 0 ] && [ "$REPLENISH" == "full" ];
 then
@@ -136,10 +131,7 @@ then
     $SPARK_HOME/sbin/start-all.sh
 fi
 
-#
-
 echo ">>>>>>>>>> NOW WAIT FOR EXPERIMENT TO FINISH >>>>>>>>>>>>>> "
-
 
 while true 
 do
@@ -153,8 +145,7 @@ do
 	if [ "$sparkrunning" != 0 ]; 
 	then
 	    echo "sparkprocess still running. Exit anyway"
-	fi
-	
+	fi	
 	echo "EXPT DONE!!!!"
 	endtime=`date +%s`
 	td=$(($endtime-$starttime))
