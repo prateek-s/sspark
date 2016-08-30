@@ -208,6 +208,8 @@ private[spark] class MesosSchedulerBackend(
 
   override def reregistered(d: SchedulerDriver, masterInfo: MasterInfo) {}
 
+  override def CloudInfo(d:SchedulerDriver, info: CloudInfo) {} 
+
   /**
    * Method called by Mesos to offer resources on slaves. We respond by asking our active task sets
    * for tasks in order of priority. We fill each node with tasks in a round-robin manner so that

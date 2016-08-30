@@ -115,8 +115,10 @@
     <java.version>1.6</java.version>
     <sbt.project.name>spark</sbt.project.name>
     <scala.macros.version>2.0.1</scala.macros.version>
-    <mesos.version>0.21.0</mesos.version>
+    
+    <mesos.version>1.0.0</mesos.version>
     <mesos.classifier>shaded-protobuf</mesos.classifier>
+    
     <slf4j.version>1.7.10</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
     <hadoop.version>1.0.4</hadoop.version>
@@ -183,6 +185,13 @@
   </properties>
 
   <repositories>
+
+    <repository>
+        <id>mymesos</id>
+        <name>mesos_local</name>
+        <url>file:${project.basedir}/repo</url>
+    </repository>
+    
     <repository>
       <id>central</id>
       <!-- This should be at top, it makes maven try the central repo first and then others and hence faster dep resolution -->
@@ -528,6 +537,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+      
       <dependency>
         <groupId>org.apache.mesos</groupId>
         <artifactId>mesos</artifactId>
@@ -540,6 +550,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+      
       <dependency>
         <groupId>org.roaringbitmap</groupId>
         <artifactId>RoaringBitmap</artifactId>
