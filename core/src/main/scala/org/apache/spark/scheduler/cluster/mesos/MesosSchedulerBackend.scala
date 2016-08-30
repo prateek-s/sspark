@@ -36,6 +36,7 @@ import org.apache.spark.scheduler.cluster.ExecutorInfo
 import org.apache.spark.scheduler._
 import org.apache.spark.util.Utils
 
+
 /**
  * A SchedulerBackend for running fine-grained tasks on Mesos. Each Spark task is mapped to a
  * separate Mesos task, allowing multiple applications to share cluster nodes both in space (tasks
@@ -208,7 +209,18 @@ private[spark] class MesosSchedulerBackend(
 
   override def reregistered(d: SchedulerDriver, masterInfo: MasterInfo) {}
 
-  override def CloudInfo(d:SchedulerDriver, info: CloudInfo) {} 
+  def cloudInfo(d:SchedulerDriver, a: Double, b: Double, c: Double, e: Double)
+  {
+    logInfo("Received cloud info message! "+a+b+c+e) ;
+  }
+
+  def terminationWarning(d: SchedulerDriver,
+    inverse_offers: JList[InverseOffer],
+    warning_time_seconds: Double)
+  {
+    logInfo("Termination warning received " + warning_time_seconds) ;
+  }
+
 
   /**
    * Method called by Mesos to offer resources on slaves. We respond by asking our active task sets

@@ -187,6 +187,40 @@ private[spark] class CoarseMesosSchedulerBackend(
       isRegistered = true
       registeredLock.notifyAll()
     }
+
+    //XXX request_resources() ;
+  }
+
+  def make_resource_request(d: SchedulerDriver) {
+    logInfo("Making resource requests to the master")
+
+    var _cpus = conf.get("spark.cores.max")
+    val cpus = _cpus.toDouble
+
+    var mem = conf.get("spark.executor.memory")
+    var alpha = 20.0 // conf.get("spark.ft.alpha")
+
+    val cpuResource = Resource.newBuilder()
+      .setName("cpus")
+      .setType(Value.Type.SCALAR)
+      .setScalar(Value.Scalar.newBuilder().setValue(cpus).build())
+      .build()
+
+    val alphaResource = Resource.newBuilder()
+      .setName("alpha")
+      .setType(Value.Type.SCALAR)
+      .setScalar(Value.Scalar.newBuilder().setValue(alpha).build())
+      .build()
+    
+    val res_request = Request.newBuilder()
+      .addResources(cpuResource)
+      .addResources(alphaResource)
+      .build()
+
+    // Now send this to mesos!!
+
+    d.requestResources(Collections.singleton(res_request)) ;
+
   }
 
   def waitForRegister() {
@@ -200,6 +234,20 @@ private[spark] class CoarseMesosSchedulerBackend(
   override def disconnected(d: SchedulerDriver) {}
 
   override def reregistered(d: SchedulerDriver, masterInfo: MasterInfo) {}
+
+
+  def cloudInfo(d:SchedulerDriver, a: Double, b: Double, c: Double, e: Double)
+  {
+    logInfo("Received cloud info message! "+a+b+c+e) ;
+  }
+
+  def terminationWarning(d: SchedulerDriver,
+    inverse_offers: JList[InverseOffer],
+    warning_time_seconds: Double)
+  {
+    logInfo("Termination warning received " + warning_time_seconds) ;
+  }
+
 
   /**
    * Method called by Mesos to offer resources on slaves. We respond by launching an executor,
