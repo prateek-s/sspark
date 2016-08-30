@@ -195,11 +195,11 @@ private[spark] class CoarseMesosSchedulerBackend(
   def make_resource_request(d: SchedulerDriver) {
     logInfo("Making resource requests to the master")
 
-    var _cpus = conf.get("spark.cores.max")
+    var _cpus = conf.getDouble("spark.cores.max", 10.0)
     val cpus = _cpus.toDouble
 
-    var mem = conf.get("spark.executor.memory")
-    var alpha = 20.0 // conf.get("spark.ft.alpha")
+    var mem = conf.getDouble("spark.executor.memory", 1)
+    var alpha = conf.getDouble("spark.ft.alpha", 2.0)
 
     val cpuResource = Resource.newBuilder()
       .setName("cpus")
@@ -237,9 +237,13 @@ private[spark] class CoarseMesosSchedulerBackend(
   override def reregistered(d: SchedulerDriver, masterInfo: MasterInfo) {}
 
 
-  def cloudInfo(d:SchedulerDriver, a: Double, b: Double, c: Double, e: Double)
+  def cloudInfo(d:SchedulerDriver, e_cost: Double, e_mttf: Double, current_cost: Double, current_mttf: Double)
   {
-    logInfo("Received cloud info message! "+a+b+c+e) ;
+    logInfo("Received cloud info message! ")
+
+    //Inform the checkpointer of  e_mttf
+    conf.set("spark.checkpointing.MTTF", e_mttf.toString) 
+
   }
 
   def terminationWarning(d: SchedulerDriver,
