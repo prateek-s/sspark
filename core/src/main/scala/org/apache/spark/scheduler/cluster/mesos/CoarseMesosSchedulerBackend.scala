@@ -189,6 +189,7 @@ private[spark] class CoarseMesosSchedulerBackend(
     }
 
     //XXX request_resources() ;
+    make_resource_request(d) 
   }
 
   def make_resource_request(d: SchedulerDriver) {
