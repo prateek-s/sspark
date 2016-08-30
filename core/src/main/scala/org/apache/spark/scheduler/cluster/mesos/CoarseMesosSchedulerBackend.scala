@@ -201,6 +201,10 @@ private[spark] class CoarseMesosSchedulerBackend(
     var mem = conf.getDouble("spark.executor.memory", 1)
     var alpha = conf.getDouble("spark.ft.alpha", 2.0)
 
+    // Memory per executor is not the same as mem-per-core.
+    // How to reconcile these? Either ask for a mem-per-core in some config param
+    // Or ignore memory requirements completely? 
+
     val cpuResource = Resource.newBuilder()
       .setName("cpus")
       .setType(Value.Type.SCALAR)
