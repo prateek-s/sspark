@@ -192,6 +192,7 @@ private[spark] class CoarseMesosSchedulerBackend(
     make_resource_request(d) 
   }
 
+
   def make_resource_request(d: SchedulerDriver) {
     logInfo("Making resource requests to the master")
 
