@@ -208,9 +208,9 @@ private[spark] class CoarseMesosSchedulerBackend(
     // Or ignore memory requirements completely? 
 
     logInfo("Requesting CPU cores " + cpus) ;
-    
+
     val cpuResource = Resource.newBuilder()
-      .setName("cpus")
+      .setName("cpu")
       .setType(Value.Type.SCALAR)
       .setScalar(Value.Scalar.newBuilder().setValue(cpus).build())
       .build()
