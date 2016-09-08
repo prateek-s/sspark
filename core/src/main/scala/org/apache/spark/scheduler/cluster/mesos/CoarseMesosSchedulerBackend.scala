@@ -189,15 +189,16 @@ private[spark] class CoarseMesosSchedulerBackend(
     }
 
     //XXX request_resources() ;
-    make_resource_request(d) 
+    logInfo("Making resource request") ;
+    make_resource_request(d)
+    logInfo("Made resource request") ;
   }
 
 
   def make_resource_request(d: SchedulerDriver) {
     logInfo("Making resource requests to the master")
 
-    var _cpus = conf.getDouble("spark.cores.max", 10.0)
-    val cpus = _cpus.toDouble
+    var cpus = conf.getDouble("spark.cores.max", 10.0)
 
     var mem = conf.getDouble("spark.executor.memory", 1)
     var alpha = conf.getDouble("spark.ft.alpha", 2.0)
@@ -206,6 +207,8 @@ private[spark] class CoarseMesosSchedulerBackend(
     // How to reconcile these? Either ask for a mem-per-core in some config param
     // Or ignore memory requirements completely? 
 
+    logInfo("Requesting CPU cores " + cpus) ;
+    
     val cpuResource = Resource.newBuilder()
       .setName("cpus")
       .setType(Value.Type.SCALAR)
