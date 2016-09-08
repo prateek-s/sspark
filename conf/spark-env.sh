@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
-export SPARK_LOCAL_DIRS="/mnt/spark"
+#export SPARK_LOCAL_DIRS="/mnt/spark"
 
 # Standalone cluster options
-export SPARK_MASTER_OPTS=""
-export SPARK_WORKER_INSTANCES=1
-export SPARK_WORKER_CORES=2
+#export SPARK_MASTER_OPTS=""
+#export SPARK_WORKER_INSTANCES=1
+#export SPARK_WORKER_CORES=2
 
 export HADOOP_HOME="/root/persistent-hdfs"
 export SPARK_MASTER_IP=ec2-54-237-113-55.compute-1.amazonaws.com
-export MASTER=`cat /root/spark-ec2/cluster-url`
+#export MASTER=`cat /root/spark-ec2/cluster-url`
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+export MESOS_NATIVE_LIBRARY=/usr/local/lib/libmesos.so
 
 export SPARK_SUBMIT_LIBRARY_PATH="$SPARK_SUBMIT_LIBRARY_PATH:/root/persistent-hdfs/lib/native/"
 export SPARK_SUBMIT_CLASSPATH="$SPARK_CLASSPATH:$SPARK_SUBMIT_CLASSPATH:/root/persistent-hdfs/conf"
@@ -18,4 +21,5 @@ export SPARK_SUBMIT_CLASSPATH="$SPARK_CLASSPATH:$SPARK_SUBMIT_CLASSPATH:/root/pe
 export SPARK_PUBLIC_DNS=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
 
 # Set a high ulimit for large shuffles
-ulimit -n 1000000
+#This requires sudo privileges though!
+#ulimit -n 1000000
